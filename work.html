@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -10,12 +11,16 @@
 
   <title>Model UN Check-In</title>
 
+
   <style>
+
     * {
       box-sizing: border-box;
     }
 
+
     body {
+
       margin: 0;
       min-height: 100vh;
 
@@ -24,312 +29,614 @@
         Helvetica,
         sans-serif;
 
-      background: #071a33;
-      color: white;
+      background:
+        #071a33;
 
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      color:
+        white;
 
-      padding: 24px;
+      display:
+        flex;
+
+      justify-content:
+        center;
+
+      align-items:
+        center;
+
+      padding:
+        24px;
+
     }
+
 
     .container {
+
       width: 100%;
       max-width: 850px;
-      text-align: center;
+
+      text-align:
+        center;
+
     }
+
 
     .club-label {
-      letter-spacing: 4px;
-      opacity: 0.65;
-      font-size: 15px;
-      margin-bottom: 7px;
+
+      letter-spacing:
+        4px;
+
+      opacity:
+        0.65;
+
+      font-size:
+        15px;
+
+      margin-bottom:
+        7px;
+
     }
+
 
     h1 {
-      margin: 0 0 10px 0;
-      font-size: 42px;
+
+      margin:
+        0 0 10px 0;
+
+      font-size:
+        42px;
+
     }
 
+
     #status {
-      margin-bottom: 20px;
-      font-size: 18px;
-      font-weight: bold;
+
+      margin-bottom:
+        20px;
+
+      font-size:
+        18px;
+
+      font-weight:
+        bold;
+
     }
+
 
     .ready {
       color: #70e89e;
     }
 
+
     .busy {
       color: #ffd166;
     }
 
-    .camera-box {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
 
-      border-radius: 18px;
-      background: black;
+    .camera-box {
+
+      position:
+        relative;
+
+      width:
+        100%;
+
+      overflow:
+        hidden;
+
+      border-radius:
+        18px;
+
+      background:
+        black;
 
       border:
         2px solid
         rgba(255,255,255,0.25);
+
     }
+
 
     video {
-      display: block;
-      width: 100%;
-      max-height: 520px;
-      object-fit: cover;
+
+      display:
+        block;
+
+      width:
+        100%;
+
+      max-height:
+        520px;
+
+      object-fit:
+        cover;
+
     }
 
+
     .scan-guide {
-      position: absolute;
 
-      top: 8%;
-      bottom: 8%;
+      position:
+        absolute;
 
-      left: 37%;
-      right: 37%;
+      top:
+        8%;
+
+      bottom:
+        8%;
+
+      left:
+        37%;
+
+      right:
+        37%;
 
       border:
         3px solid
         rgba(255,255,255,0.95);
 
-      border-radius: 12px;
-      pointer-events: none;
+      border-radius:
+        12px;
+
+      pointer-events:
+        none;
+
     }
 
+
     .scan-line {
-      position: absolute;
 
-      top: 12%;
-      bottom: 12%;
+      position:
+        absolute;
 
-      left: 50%;
-      width: 3px;
+      top:
+        12%;
 
-      background: #ff5252;
+      bottom:
+        12%;
+
+      left:
+        50%;
+
+      width:
+        3px;
+
+      background:
+        #ff5252;
 
       box-shadow:
         0 0 10px
         rgba(255,82,82,0.8);
 
-      pointer-events: none;
+      pointer-events:
+        none;
+
     }
+
 
     .instruction {
-      margin-top: 15px;
-      font-size: 18px;
-      opacity: 0.85;
+
+      margin-top:
+        15px;
+
+      font-size:
+        18px;
+
+      opacity:
+        0.85;
+
     }
 
-    #result {
-      margin-top: 22px;
-      min-height: 135px;
-      padding: 22px;
 
-      border-radius: 14px;
+    #result {
+
+      margin-top:
+        22px;
+
+      min-height:
+        135px;
+
+      padding:
+        22px;
+
+      border-radius:
+        14px;
 
       background:
         rgba(255,255,255,0.08);
 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display:
+        flex;
 
-      transition:
-        background 0.2s ease;
+      flex-direction:
+        column;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
     }
 
+
     .success {
+
       background:
         rgba(38,180,90,0.22)
         !important;
+
     }
 
+
     .error {
+
       background:
         rgba(220,55,55,0.22)
         !important;
+
     }
+
 
     .student-name {
-      font-size: 34px;
-      font-weight: bold;
-      margin-bottom: 7px;
+
+      font-size:
+        34px;
+
+      font-weight:
+        bold;
+
+      margin-bottom:
+        7px;
+
     }
+
 
     .event-name {
-      font-size: 20px;
-      margin-bottom: 7px;
+
+      font-size:
+        20px;
+
+      margin-bottom:
+        7px;
+
     }
+
 
     .points {
-      font-size: 36px;
-      font-weight: bold;
-      color: #70e89e;
+
+      font-size:
+        36px;
+
+      font-weight:
+        bold;
+
+      color:
+        #70e89e;
+
     }
+
 
     .timestamp {
-      margin-top: 8px;
-      opacity: 0.7;
-      font-size: 15px;
+
+      margin-top:
+        8px;
+
+      opacity:
+        0.7;
+
+      font-size:
+        15px;
+
     }
+
 
     .error-title {
-      font-size: 27px;
-      font-weight: bold;
-      color: #ff9999;
+
+      font-size:
+        27px;
+
+      font-weight:
+        bold;
+
+      color:
+        #ff9999;
+
     }
+
 
     .error-name {
-      font-size: 20px;
-      margin-bottom: 7px;
+
+      font-size:
+        21px;
+
+      font-weight:
+        bold;
+
+      margin-bottom:
+        8px;
+
     }
 
-    .manual-section {
-      margin-top: 24px;
-      padding-top: 18px;
 
-      border-top:
-        1px solid
-        rgba(255,255,255,0.16);
-    }
+    /******************************************************
+     * REGISTRATION
+     ******************************************************/
 
-    .manual-label {
-      font-size: 14px;
-      opacity: 0.6;
-      margin-bottom: 9px;
-    }
-
-    .manual-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    input,
-    select {
-      width: 100%;
-      min-width: 0;
-
-      padding: 12px;
-
-      border: none;
-      border-radius: 8px;
-
-      font-size: 16px;
-    }
-
-    button {
-      padding: 12px 18px;
-
-      border: none;
-      border-radius: 8px;
-
-      background: white;
-      color: #071a33;
-
-      font-size: 16px;
-      font-weight: bold;
-
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .small-status {
-      margin-top: 12px;
-      font-size: 12px;
-      opacity: 0.4;
-    }
 
     #registrationPanel {
-      display: none;
 
-      margin-top: 22px;
-      padding: 22px;
+      display:
+        none;
 
-      border-radius: 14px;
+      margin-top:
+        22px;
+
+      padding:
+        24px;
+
+      border-radius:
+        14px;
 
       background:
         rgba(255,255,255,0.10);
 
-      text-align: left;
+      text-align:
+        left;
+
     }
+
 
     #registrationPanel h2 {
-      margin-top: 0;
-      margin-bottom: 8px;
+
+      margin:
+        0 0 8px 0;
+
     }
+
 
     #registrationPanel p {
-      opacity: 0.8;
-      margin-top: 0;
-      margin-bottom: 18px;
+
+      margin-top:
+        0;
+
+      opacity:
+        0.8;
+
     }
+
 
     .form-group {
-      margin-top: 14px;
+
+      margin-top:
+        15px;
+
     }
+
 
     .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
+
+      display:
+        block;
+
+      font-weight:
+        bold;
+
+      margin-bottom:
+        6px;
+
     }
+
+
+    input,
+    select {
+
+      width:
+        100%;
+
+      padding:
+        12px;
+
+      border:
+        none;
+
+      border-radius:
+        8px;
+
+      font-size:
+        16px;
+
+    }
+
 
     .registration-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 18px;
+
+      display:
+        flex;
+
+      gap:
+        10px;
+
+      margin-top:
+        20px;
+
     }
 
+
+    button {
+
+      padding:
+        12px 18px;
+
+      border:
+        none;
+
+      border-radius:
+        8px;
+
+      background:
+        white;
+
+      color:
+        #071a33;
+
+      font-size:
+        16px;
+
+      font-weight:
+        bold;
+
+      cursor:
+        pointer;
+
+    }
+
+
+    button:disabled {
+
+      opacity:
+        0.4;
+
+      cursor:
+        not-allowed;
+
+    }
+
+
     .secondary-button {
+
       background:
         rgba(255,255,255,0.15);
-      color: white;
+
+      color:
+        white;
+
     }
+
+
+    /******************************************************
+     * MANUAL ID
+     ******************************************************/
+
+
+    .manual-section {
+
+      margin-top:
+        24px;
+
+      padding-top:
+        18px;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.16);
+
+    }
+
+
+    .manual-label {
+
+      font-size:
+        14px;
+
+      opacity:
+        0.6;
+
+      margin-bottom:
+        9px;
+
+    }
+
+
+    .manual-row {
+
+      display:
+        flex;
+
+      gap:
+        10px;
+
+    }
+
+
+    .manual-row input {
+
+      flex:
+        1;
+
+    }
+
+
+    .small-status {
+
+      margin-top:
+        12px;
+
+      font-size:
+        12px;
+
+      opacity:
+        0.4;
+
+    }
+
 
     @media (
       max-width: 600px
     ) {
+
       h1 {
-        font-size: 32px;
+        font-size:
+          32px;
       }
 
+
       .scan-guide {
-        left: 33%;
-        right: 33%;
+
+        left:
+          33%;
+
+        right:
+          33%;
+
       }
+
 
       .manual-row,
       .registration-actions {
-        flex-direction: column;
+
+        flex-direction:
+          column;
+
       }
+
     }
+
   </style>
 
 </head>
 
+
+
 <body>
+
 
 <div class="container">
 
+
   <div class="club-label">
+
     MODEL UNITED NATIONS
+
   </div>
 
+
   <h1>
+
     Check-In
+
   </h1>
+
 
   <div
     id="status"
@@ -339,7 +646,10 @@
 
   </div>
 
+
+
   <div class="camera-box">
+
 
     <video
       id="video"
@@ -348,10 +658,15 @@
       playsinline>
     </video>
 
+
     <div class="scan-guide"></div>
+
     <div class="scan-line"></div>
 
+
   </div>
+
+
 
   <div class="instruction">
 
@@ -360,84 +675,130 @@
 
   </div>
 
+
+
   <div id="result">
 
     Initializing scanner...
 
   </div>
 
+
+
+  <!-- NEW MEMBER REGISTRATION -->
+
+
   <div id="registrationPanel">
 
+
     <h2>
+
       New Member Registration
+
     </h2>
 
+
     <p>
-      This Student ID is not currently registered.
-      If you are joining Model UN, enter your information below.
+
+      Your Student ID is not registered.
+      If you are joining Model UN,
+      enter your information below.
+
     </p>
+
+
 
     <div class="form-group">
 
       <label for="newMemberName">
+
         Full Name
+
       </label>
+
 
       <input
         id="newMemberName"
         type="text"
-        placeholder="First and last name"
-        autocomplete="name">
+        placeholder="First and last name">
 
     </div>
+
+
 
     <div class="form-group">
 
       <label for="newMemberEmail">
+
         School Email
+
       </label>
+
 
       <input
         id="newMemberEmail"
         type="email"
-        placeholder="School email address"
-        autocomplete="email">
+        placeholder="School email">
 
     </div>
+
+
 
     <div class="form-group">
 
       <label for="newMemberGrade">
+
         Grade
+
       </label>
+
 
       <select id="newMemberGrade">
 
+
         <option value="">
+
           Select grade
+
         </option>
+
 
         <option value="9">
+
           9
+
         </option>
+
 
         <option value="10">
+
           10
+
         </option>
+
 
         <option value="11">
+
           11
+
         </option>
 
+
         <option value="12">
+
           12
+
         </option>
+
 
       </select>
 
     </div>
 
+
+
     <div class="registration-actions">
+
 
       <button
         id="registerButton"
@@ -446,6 +807,7 @@
         Register & Check In
 
       </button>
+
 
       <button
         id="cancelRegistration"
@@ -456,11 +818,19 @@
 
       </button>
 
+
     </div>
+
 
   </div>
 
+
+
+  <!-- MANUAL ID -->
+
+
   <div class="manual-section">
+
 
     <div class="manual-label">
 
@@ -469,13 +839,16 @@
 
     </div>
 
+
     <div class="manual-row">
+
 
       <input
         id="manualId"
         type="text"
         placeholder="Student ID"
         autocomplete="off">
+
 
       <button
         id="manualButton"
@@ -485,51 +858,74 @@
 
       </button>
 
+
     </div>
 
+
   </div>
+
 
   <div class="small-status">
 
-    Code 39 scanner
+    Code 39 • Model UN Attendance
 
   </div>
 
+
 </div>
+
+
 
 <script>
 
 
-/***********************************************************
+/*************************************************************
  * CONFIGURATION
- ***********************************************************/
+ *************************************************************/
 
 
-// PASTE YOUR GOOGLE APPS SCRIPT /exec URL HERE
+/*
+ * IMPORTANT:
+ *
+ * Paste your Google Apps Script /exec URL here.
+ */
 
 const APPS_SCRIPT_URL =
+
   "https://script.google.com/macros/s/AKfycbxwLRFPpqwTbtcsS5Zw0nzl_Y3WYrUbXvGX3Ar4zLI3NVjbJYZV17JAUGZTZCP1rQJRyg/exec";
 
 
-// How long success/error stays visible
+
+/*
+ * Student result remains visible this long.
+ */
+
 const RESULT_DISPLAY_MS =
-  2500;
+  2800;
 
 
-// Minimum time between accepted scans
+
+/*
+ * Minimum delay between physical card scans.
+ */
+
 const SCAN_COOLDOWN_MS =
-  3200;
+  3300;
 
 
-// Camera scan interval
+
+/*
+ * Camera checks approximately 8 times per second.
+ */
+
 const DETECTION_INTERVAL_MS =
   120;
 
 
 
-/***********************************************************
+/*************************************************************
  * ELEMENTS
- ***********************************************************/
+ *************************************************************/
 
 
 const video =
@@ -599,27 +995,44 @@ const cancelRegistration =
 
 
 
-/***********************************************************
+/*************************************************************
  * STATE
- ***********************************************************/
+ *************************************************************/
 
 
-let detector = null;
-let stream = null;
+let detector =
+  null;
 
-let scannerLocked = false;
-let scanning = false;
 
-let lastAcceptedScan = 0;
+let stream =
+  null;
 
-let currentUnknownStudentId =
+
+let scanning =
+  false;
+
+
+let scannerLocked =
+  false;
+
+
+let lastAcceptedScan =
+  0;
+
+
+/*
+ * Stores the unknown barcode while
+ * the registration form is open.
+ */
+
+let pendingStudentId =
   null;
 
 
 
-/***********************************************************
- * INITIALIZE
- ***********************************************************/
+/*************************************************************
+ * INITIALIZE CODE 39 SCANNER
+ *************************************************************/
 
 
 async function initializeScanner() {
@@ -690,13 +1103,11 @@ async function initializeScanner() {
   catch(error) {
 
 
-    console.error(
-      error
-    );
+    console.error(error);
 
 
     scannerError(
-      "Scanner could not be initialized."
+      "Could not initialize the barcode scanner."
     );
 
   }
@@ -705,9 +1116,9 @@ async function initializeScanner() {
 
 
 
-/***********************************************************
- * START CAMERA
- ***********************************************************/
+/*************************************************************
+ * CAMERA
+ *************************************************************/
 
 
 async function startCamera() {
@@ -720,20 +1131,24 @@ async function startCamera() {
       await navigator.mediaDevices
         .getUserMedia({
 
-          audio: false,
+          audio:
+            false,
 
           video: {
 
             width: {
-              ideal: 1920
+              ideal:
+                1920
             },
 
             height: {
-              ideal: 1080
+              ideal:
+                1080
             },
 
             frameRate: {
-              ideal: 30
+              ideal:
+                30
             }
 
           }
@@ -748,11 +1163,9 @@ async function startCamera() {
     await video.play();
 
 
-
-    // -----------------------------------------
-    // CONTINUOUS AUTOFOCUS IF AVAILABLE
-    // -----------------------------------------
-
+    /*
+     * Attempt continuous autofocus.
+     */
 
     const track =
       stream
@@ -796,6 +1209,7 @@ async function startCamera() {
 
         catch(error) {
 
+
           console.log(
             "Continuous autofocus unavailable."
           );
@@ -805,7 +1219,6 @@ async function startCamera() {
       }
 
     }
-
 
 
     scanning =
@@ -823,9 +1236,7 @@ async function startCamera() {
   catch(error) {
 
 
-    console.error(
-      error
-    );
+    console.error(error);
 
 
     scannerError(
@@ -838,9 +1249,9 @@ async function startCamera() {
 
 
 
-/***********************************************************
+/*************************************************************
  * CAMERA LOOP
- ***********************************************************/
+ *************************************************************/
 
 
 async function scanLoop() {
@@ -861,28 +1272,28 @@ async function scanLoop() {
     ) {
 
 
-      const barcodes =
+      const results =
         await detector.detect(
           video
         );
 
 
       if (
-        barcodes.length > 0
+        results.length > 0
       ) {
 
 
-        const value =
+        const studentId =
           String(
-            barcodes[0].rawValue || ""
+            results[0].rawValue || ""
           ).trim();
 
 
-        if (value) {
+        if (studentId) {
 
 
-          handleDetectedBarcode(
-            value
+          physicalBarcodeDetected(
+            studentId
           );
 
         }
@@ -898,7 +1309,7 @@ async function scanLoop() {
 
 
     console.log(
-      "Frame scan failed:",
+      "Frame scan error:",
       error
     );
 
@@ -914,12 +1325,12 @@ async function scanLoop() {
 
 
 
-/***********************************************************
- * PHYSICAL BARCODE DETECTED
- ***********************************************************/
+/*************************************************************
+ * PHYSICAL BARCODE
+ *************************************************************/
 
 
-function handleDetectedBarcode(
+function physicalBarcodeDetected(
   studentId
 ) {
 
@@ -928,10 +1339,7 @@ function handleDetectedBarcode(
     Date.now();
 
 
-  if (
-    scannerLocked
-  ) {
-
+  if (scannerLocked) {
     return;
   }
 
@@ -950,7 +1358,7 @@ function handleDetectedBarcode(
     now;
 
 
-  processCheckIn(
+  startCheckIn(
     studentId
   );
 
@@ -958,20 +1366,17 @@ function handleDetectedBarcode(
 
 
 
-/***********************************************************
- * PROCESS CHECK-IN
- ***********************************************************/
+/*************************************************************
+ * START CHECK-IN
+ *************************************************************/
 
 
-function processCheckIn(
+function startCheckIn(
   studentId
 ) {
 
 
-  if (
-    scannerLocked
-  ) {
-
+  if (scannerLocked) {
     return;
   }
 
@@ -1000,7 +1405,7 @@ function processCheckIn(
     "Checking student ID...";
 
 
-  sendCheckInRequest(
+  sendCheckIn(
     studentId
   );
 
@@ -1008,12 +1413,12 @@ function processCheckIn(
 
 
 
-/***********************************************************
- * SEND CHECK-IN TO APPS SCRIPT
- ***********************************************************/
+/*************************************************************
+ * SEND CHECK-IN
+ *************************************************************/
 
 
-function sendCheckInRequest(
+function sendCheckIn(
   studentId
 ) {
 
@@ -1034,7 +1439,7 @@ function sendCheckInRequest(
     function(data) {
 
 
-      handleCheckInResult(
+      handleCheckInResponse(
         data,
         studentId
       );
@@ -1051,7 +1456,7 @@ function sendCheckInRequest(
       );
 
 
-      playErrorSound();
+      errorSound();
 
 
       scheduleReset();
@@ -1064,21 +1469,20 @@ function sendCheckInRequest(
 
 
 
-/***********************************************************
+/*************************************************************
  * HANDLE CHECK-IN RESPONSE
- ***********************************************************/
+ *************************************************************/
 
 
-function handleCheckInResult(
+function handleCheckInResponse(
   data,
-  studentId
+  scannedStudentId
 ) {
 
 
-  // -----------------------------------------
-  // SUCCESS
-  // -----------------------------------------
-
+  /*
+   * NORMAL SUCCESS
+   */
 
   if (
     data &&
@@ -1087,11 +1491,12 @@ function handleCheckInResult(
 
 
     showSuccess(
-      data
+      data,
+      false
     );
 
 
-    playSuccessSound();
+    successSound();
 
 
     scheduleReset();
@@ -1103,31 +1508,25 @@ function handleCheckInResult(
 
 
 
-  // -----------------------------------------
-  // UNKNOWN STUDENT
-  // -----------------------------------------
-
+  /*
+   * NEW MEMBER
+   */
 
   if (
     data &&
-    (
-      data.code ===
-        "STUDENT_NOT_FOUND"
-      ||
-      data.message ===
-        "Student not found."
-    )
+    data.code ===
+      "STUDENT_NOT_FOUND"
   ) {
 
 
-    currentUnknownStudentId =
-      studentId;
+    pendingStudentId =
+      scannedStudentId;
 
 
-    showNewMemberRegistration();
+    openRegistration();
 
 
-    playNewMemberSound();
+    newMemberSound();
 
 
     return;
@@ -1136,10 +1535,45 @@ function handleCheckInResult(
 
 
 
-  // -----------------------------------------
-  // OTHER FAILURE
-  // -----------------------------------------
+  /*
+   * ALREADY CHECKED IN
+   *
+   * This is specifically what happens
+   * if somebody registers and then
+   * scans the same card again.
+   */
 
+  if (
+    data &&
+    data.code ===
+      "ALREADY_CHECKED_IN"
+  ) {
+
+
+    showFailure(
+
+      data.name || "",
+
+      "Already checked in."
+
+    );
+
+
+    errorSound();
+
+
+    scheduleReset();
+
+
+    return;
+
+  }
+
+
+
+  /*
+   * ALL OTHER FAILURES
+   */
 
   showFailure(
 
@@ -1156,7 +1590,7 @@ function handleCheckInResult(
   );
 
 
-  playErrorSound();
+  errorSound();
 
 
   scheduleReset();
@@ -1165,12 +1599,12 @@ function handleCheckInResult(
 
 
 
-/***********************************************************
- * NEW MEMBER REGISTRATION DISPLAY
- ***********************************************************/
+/*************************************************************
+ * OPEN REGISTRATION
+ *************************************************************/
 
 
-function showNewMemberRegistration() {
+function openRegistration() {
 
 
   resultBox.className =
@@ -1214,343 +1648,335 @@ function showNewMemberRegistration() {
 
 
 
-/***********************************************************
+/*************************************************************
  * REGISTER BUTTON
- ***********************************************************/
+ *************************************************************/
 
 
-registerButton
-  .addEventListener(
-    "click",
-    function() {
+registerButton.addEventListener(
+  "click",
+  function() {
 
 
-      const name =
-        newMemberName.value
-          .trim();
+    const name =
+      newMemberName.value
+        .trim();
 
 
-      const email =
-        newMemberEmail.value
-          .trim();
+    const email =
+      newMemberEmail.value
+        .trim();
 
 
-      const grade =
-        newMemberGrade.value;
+    const grade =
+      newMemberGrade.value;
 
 
-      if (!name) {
-
-
-        alert(
-          "Enter your full name."
-        );
-
-
-        return;
-
-      }
-
-
-      if (!email) {
-
-
-        alert(
-          "Enter your school email."
-        );
-
-
-        return;
-
-      }
-
-
-      if (!grade) {
-
-
-        alert(
-          "Select your grade."
-        );
-
-
-        return;
-
-      }
-
-
-      if (
-        !currentUnknownStudentId
-      ) {
-
-
-        alert(
-          "Student ID was lost. Please scan your card again."
-        );
-
-
-        resetScanner();
-
-
-        return;
-
-      }
-
-
-      registerButton.disabled =
-        true;
-
-
-      cancelRegistration.disabled =
-        true;
-
-
-      statusBox.textContent =
-        "Registering member...";
-
-
-      sendRegistrationRequest(
-
-        currentUnknownStudentId,
-
-        name,
-
-        email,
-
-        grade
-
-      );
-
-    }
-  );
-
-
-
-/***********************************************************
- * SEND REGISTRATION
- ***********************************************************/
-
-
-function sendRegistrationRequest(
-  studentId,
-  name,
-  email,
-  grade
-) {
-
-
-  jsonpRequest(
-
-    {
-
-      action:
-        "register",
-
-      id:
-        studentId,
-
-      name:
-        name,
-
-      email:
-        email,
-
-      grade:
-        grade
-
-    },
-
-
-    function(data) {
-
-
-      if (
-        data &&
-        data.success
-      ) {
-
-
-        registrationPanel.style.display =
-          "none";
-
-
-        showRegistrationSuccess(
-          data
-        );
-
-
-        playSuccessSound();
-
-
-        clearRegistrationForm();
-
-
-        setTimeout(
-          resetScanner,
-          RESULT_DISPLAY_MS
-        );
-
-
-        return;
-
-      }
+    if (!name) {
 
 
       alert(
-        data &&
-        data.message
-          ? data.message
-          : "Registration failed."
+        "Please enter your full name."
       );
 
 
-      registerButton.disabled =
-        false;
-
-
-      cancelRegistration.disabled =
-        false;
-
-    },
-
-
-    function() {
-
-
-      alert(
-        "Could not connect to registration system."
-      );
-
-
-      registerButton.disabled =
-        false;
-
-
-      cancelRegistration.disabled =
-        false;
+      return;
 
     }
 
-  );
 
-}
-
+    if (!email) {
 
 
-/***********************************************************
- * REGISTRATION SUCCESS
- ***********************************************************/
+      alert(
+        "Please enter your school email."
+      );
 
 
-function showRegistrationSuccess(
-  data
-) {
+      return;
+
+    }
 
 
-  const sign =
-    Number(
-      data.points
-    ) >= 0
-      ? "+"
-      : "";
+    if (!grade) {
 
 
-  resultBox.className =
-    "success";
+      alert(
+        "Please select your grade."
+      );
 
 
-  resultBox.innerHTML =
+      return;
 
-    "<div style='font-size:15px;letter-spacing:2px;margin-bottom:8px;'>" +
-
-      "WELCOME TO MODEL UN" +
-
-    "</div>" +
+    }
 
 
-    "<div class='student-name'>" +
-
-      escapeHtml(
-        data.name
-      ) +
-
-    "</div>" +
+    if (!pendingStudentId) {
 
 
-    "<div class='event-name'>" +
-
-      escapeHtml(
-        data.event
-      ) +
-
-    "</div>" +
-
-
-    "<div class='points'>" +
-
-      sign +
-
-      escapeHtml(
-        String(
-          data.points
-        )
-      ) +
-
-      " points" +
-
-    "</div>" +
-
-
-    "<div class='timestamp'>" +
-
-      escapeHtml(
-        data.timestamp
-      ) +
-
-    "</div>";
-
-
-  statusBox.className =
-    "ready";
-
-
-  statusBox.textContent =
-    "✓ MEMBER REGISTERED & CHECKED IN";
-
-}
-
-
-
-/***********************************************************
- * CANCEL REGISTRATION
- ***********************************************************/
-
-
-cancelRegistration
-  .addEventListener(
-    "click",
-    function() {
-
-
-      registrationPanel.style.display =
-        "none";
-
-
-      clearRegistrationForm();
+      alert(
+        "Student ID is no longer available. Please scan your card again."
+      );
 
 
       resetScanner();
 
+
+      return;
+
     }
+
+
+    registerButton.disabled =
+      true;
+
+
+    cancelRegistration.disabled =
+      true;
+
+
+    statusBox.textContent =
+      "Registering...";
+
+
+    jsonpRequest(
+
+      {
+
+        action:
+          "register",
+
+        id:
+          pendingStudentId,
+
+        name:
+          name,
+
+        email:
+          email,
+
+        grade:
+          grade
+
+      },
+
+
+      function(data) {
+
+
+        handleRegistrationResponse(
+          data
+        );
+
+      },
+
+
+      function() {
+
+
+        alert(
+          "Could not connect to registration system."
+        );
+
+
+        registerButton.disabled =
+          false;
+
+
+        cancelRegistration.disabled =
+          false;
+
+      }
+
+    );
+
+  }
+);
+
+
+
+/*************************************************************
+ * REGISTRATION RESPONSE
+ *************************************************************/
+
+
+function handleRegistrationResponse(
+  data
+) {
+
+
+  /*
+   * REGISTRATION SUCCESS
+   */
+
+  if (
+    data &&
+    data.success
+  ) {
+
+
+    registrationPanel.style.display =
+      "none";
+
+
+    showSuccess(
+      data,
+      true
+    );
+
+
+    successSound();
+
+
+    clearRegistration();
+
+
+    setTimeout(
+      resetScanner,
+      RESULT_DISPLAY_MS
+    );
+
+
+    return;
+
+  }
+
+
+
+  /*
+   * SOMEHOW ALREADY REGISTERED AND
+   * ALREADY CHECKED IN
+   */
+
+  if (
+    data &&
+    data.code ===
+      "ALREADY_CHECKED_IN"
+  ) {
+
+
+    registrationPanel.style.display =
+      "none";
+
+
+    showFailure(
+
+      data.name || "",
+
+      "Already registered and checked in."
+
+    );
+
+
+    errorSound();
+
+
+    clearRegistration();
+
+
+    scheduleReset();
+
+
+    return;
+
+  }
+
+
+
+  /*
+   * ID NOW EXISTS BUT WAS NOT CHECKED IN.
+   *
+   * Ask the user to scan again.
+   */
+
+  if (
+    data &&
+    data.code ===
+      "ID_ALREADY_REGISTERED"
+  ) {
+
+
+    registrationPanel.style.display =
+      "none";
+
+
+    showFailure(
+
+      data.name || "",
+
+      "Already registered. Please scan again."
+
+    );
+
+
+    errorSound();
+
+
+    clearRegistration();
+
+
+    scheduleReset();
+
+
+    return;
+
+  }
+
+
+
+  /*
+   * VALIDATION ERROR
+   */
+
+  alert(
+    data &&
+    data.message
+      ? data.message
+      : "Registration failed."
   );
 
 
-
-/***********************************************************
- * CLEAR REGISTRATION FORM
- ***********************************************************/
+  registerButton.disabled =
+    false;
 
 
-function clearRegistrationForm() {
+  cancelRegistration.disabled =
+    false;
+
+}
+
+
+
+/*************************************************************
+ * CANCEL REGISTRATION
+ *************************************************************/
+
+
+cancelRegistration.addEventListener(
+  "click",
+  function() {
+
+
+    registrationPanel.style.display =
+      "none";
+
+
+    clearRegistration();
+
+
+    resetScanner();
+
+  }
+);
+
+
+
+/*************************************************************
+ * CLEAR REGISTRATION
+ *************************************************************/
+
+
+function clearRegistration() {
 
 
   newMemberName.value =
@@ -1565,7 +1991,7 @@ function clearRegistrationForm() {
     "";
 
 
-  currentUnknownStudentId =
+  pendingStudentId =
     null;
 
 
@@ -1580,20 +2006,19 @@ function clearRegistrationForm() {
 
 
 
-/***********************************************************
- * SUCCESS DISPLAY
- ***********************************************************/
+/*************************************************************
+ * DISPLAY SUCCESS
+ *************************************************************/
 
 
 function showSuccess(
-  data
+  data,
+  newMember
 ) {
 
 
   const sign =
-    Number(
-      data.points
-    ) >= 0
+    Number(data.points) >= 0
       ? "+"
       : "";
 
@@ -1602,7 +2027,37 @@ function showSuccess(
     "success";
 
 
+  let heading =
+    "";
+
+
+  if (newMember) {
+
+
+    heading =
+
+      "<div style='" +
+
+        "font-size:14px;" +
+
+        "letter-spacing:2px;" +
+
+        "margin-bottom:8px;" +
+
+        "opacity:.8;" +
+
+      "'>" +
+
+        "WELCOME TO MODEL UN" +
+
+      "</div>";
+
+  }
+
+
   resultBox.innerHTML =
+
+    heading +
 
     "<div class='student-name'>" +
 
@@ -1612,7 +2067,6 @@ function showSuccess(
 
     "</div>" +
 
-
     "<div class='event-name'>" +
 
       escapeHtml(
@@ -1621,21 +2075,17 @@ function showSuccess(
 
     "</div>" +
 
-
     "<div class='points'>" +
 
       sign +
 
       escapeHtml(
-        String(
-          data.points
-        )
+        String(data.points)
       ) +
 
       " points" +
 
     "</div>" +
-
 
     "<div class='timestamp'>" +
 
@@ -1651,15 +2101,17 @@ function showSuccess(
 
 
   statusBox.textContent =
-    "✓ CHECK-IN COMPLETE";
+    newMember
+      ? "✓ REGISTERED & CHECKED IN"
+      : "✓ CHECK-IN COMPLETE";
 
 }
 
 
 
-/***********************************************************
- * FAILURE DISPLAY
- ***********************************************************/
+/*************************************************************
+ * DISPLAY FAILURE
+ *************************************************************/
 
 
 function showFailure(
@@ -1683,9 +2135,7 @@ function showFailure(
 
       "<div class='error-name'>" +
 
-        escapeHtml(
-          name
-        ) +
+        escapeHtml(name) +
 
       "</div>";
 
@@ -1696,9 +2146,7 @@ function showFailure(
 
     "<div class='error-title'>" +
 
-      escapeHtml(
-        message
-      ) +
+      escapeHtml(message) +
 
     "</div>";
 
@@ -1718,9 +2166,69 @@ function showFailure(
 
 
 
-/***********************************************************
+/*************************************************************
+ * MANUAL STUDENT ID
+ *************************************************************/
+
+
+manualButton.addEventListener(
+  "click",
+  function() {
+
+
+    const id =
+      manualId.value
+        .trim();
+
+
+    if (!id) {
+
+
+      showFailure(
+        "",
+        "Enter a Student ID."
+      );
+
+
+      return;
+
+    }
+
+
+    startCheckIn(
+      id
+    );
+
+  }
+);
+
+
+
+manualId.addEventListener(
+  "keydown",
+  function(event) {
+
+
+    if (
+      event.key === "Enter"
+    ) {
+
+
+      event.preventDefault();
+
+
+      manualButton.click();
+
+    }
+
+  }
+);
+
+
+
+/*************************************************************
  * RESET
- ***********************************************************/
+ *************************************************************/
 
 
 function scheduleReset() {
@@ -1742,7 +2250,7 @@ function resetScanner() {
     "none";
 
 
-  clearRegistrationForm();
+  clearRegistration();
 
 
   resultBox.className =
@@ -1771,9 +2279,9 @@ function resetScanner() {
 
 
 
-/***********************************************************
- * READY STATE
- ***********************************************************/
+/*************************************************************
+ * READY
+ *************************************************************/
 
 
 function showReady() {
@@ -1790,9 +2298,9 @@ function showReady() {
 
 
 
-/***********************************************************
+/*************************************************************
  * SCANNER ERROR
- ***********************************************************/
+ *************************************************************/
 
 
 function scannerError(
@@ -1816,9 +2324,7 @@ function scannerError(
 
     "<div class='error-title'>" +
 
-      escapeHtml(
-        message
-      ) +
+      escapeHtml(message) +
 
     "</div>";
 
@@ -1826,71 +2332,9 @@ function scannerError(
 
 
 
-/***********************************************************
- * MANUAL STUDENT ID
- ***********************************************************/
-
-
-manualButton
-  .addEventListener(
-    "click",
-    function() {
-
-
-      const id =
-        manualId.value
-          .trim();
-
-
-      if (!id) {
-
-
-        showFailure(
-          "",
-          "Enter a Student ID."
-        );
-
-
-        return;
-
-      }
-
-
-      processCheckIn(
-        id
-      );
-
-    }
-  );
-
-
-manualId
-  .addEventListener(
-    "keydown",
-    function(event) {
-
-
-      if (
-        event.key ===
-        "Enter"
-      ) {
-
-
-        event.preventDefault();
-
-
-        manualButton.click();
-
-      }
-
-    }
-  );
-
-
-
-/***********************************************************
- * GENERIC JSONP REQUEST
- ***********************************************************/
+/*************************************************************
+ * JSONP REQUEST
+ *************************************************************/
 
 
 function jsonpRequest(
@@ -1909,8 +2353,7 @@ function jsonpRequest(
     "_" +
 
     Math.floor(
-      Math.random() *
-      100000
+      Math.random() * 100000
     );
 
 
@@ -1924,9 +2367,11 @@ function jsonpRequest(
     false;
 
 
-  window[
-    callbackName
-  ] =
+  let timeout =
+    null;
+
+
+  window[callbackName] =
     function(data) {
 
 
@@ -1939,17 +2384,13 @@ function jsonpRequest(
         true;
 
 
-      clearTimeout(
-        timeout
-      );
+      clearTimeout(timeout);
 
 
       try {
 
 
-        successHandler(
-          data
-        );
+        successHandler(data);
 
 
       }
@@ -2017,9 +2458,7 @@ function jsonpRequest(
         true;
 
 
-      clearTimeout(
-        timeout
-      );
+      clearTimeout(timeout);
 
 
       cleanup();
@@ -2030,7 +2469,7 @@ function jsonpRequest(
     };
 
 
-  const timeout =
+  timeout =
     setTimeout(
       function() {
 
@@ -2050,6 +2489,7 @@ function jsonpRequest(
         errorHandler();
 
       },
+
       10000
     );
 
@@ -2059,13 +2499,16 @@ function jsonpRequest(
 
     try {
 
+
       delete window[
         callbackName
       ];
 
+
     }
 
     catch(error) {
+
 
       window[
         callbackName
@@ -2079,10 +2522,9 @@ function jsonpRequest(
       script.parentNode
     ) {
 
+
       script.parentNode
-        .removeChild(
-          script
-        );
+        .removeChild(script);
 
     }
 
@@ -2090,95 +2532,81 @@ function jsonpRequest(
 
 
   document.body
-    .appendChild(
-      script
-    );
+    .appendChild(script);
 
 }
 
 
 
-/***********************************************************
+/*************************************************************
  * SOUNDS
- ***********************************************************/
+ *************************************************************/
 
 
-function playSuccessSound() {
+function successSound() {
 
 
-  playToneSequence([
+  playTones([
+
     {
-      frequency:
-        660,
-
-      duration:
-        90
+      frequency: 660,
+      duration: 90
     },
 
     {
-      frequency:
-        880,
-
-      duration:
-        140
+      frequency: 880,
+      duration: 140
     }
+
   ]);
 
 }
 
 
 
-function playErrorSound() {
+function errorSound() {
 
 
-  playToneSequence([
+  playTones([
+
     {
-      frequency:
-        300,
-
-      duration:
-        180
+      frequency: 300,
+      duration: 170
     },
 
     {
-      frequency:
-        220,
-
-      duration:
-        180
+      frequency: 220,
+      duration: 190
     }
+
   ]);
 
 }
 
 
 
-function playNewMemberSound() {
+function newMemberSound() {
 
 
-  playToneSequence([
+  playTones([
+
     {
-      frequency:
-        520,
-
-      duration:
-        100
+      frequency: 500,
+      duration: 100
     },
 
     {
-      frequency:
-        520,
-
-      duration:
-        100
+      frequency: 620,
+      duration: 100
     }
+
   ]);
 
 }
 
 
 
-function playToneSequence(
+function playTones(
   tones
 ) {
 
@@ -2193,12 +2621,8 @@ function playToneSequence(
       window.webkitAudioContext;
 
 
-    if (
-      !AudioContextClass
-    ) {
-
+    if (!AudioContextClass) {
       return;
-
     }
 
 
@@ -2206,7 +2630,7 @@ function playToneSequence(
       new AudioContextClass();
 
 
-    let startTime =
+    let start =
       context.currentTime;
 
 
@@ -2240,35 +2664,34 @@ function playToneSequence(
         );
 
 
-        gain.gain.setValueAtTime(
-          0.08,
-          startTime
-        );
+        gain.gain
+          .setValueAtTime(
+            0.08,
+            start
+          );
 
 
-        gain.gain.exponentialRampToValueAtTime(
-          0.001,
-          startTime +
-          tone.duration /
-          1000
-        );
+        gain.gain
+          .exponentialRampToValueAtTime(
+            0.001,
+            start +
+            tone.duration / 1000
+          );
 
 
         oscillator.start(
-          startTime
+          start
         );
 
 
         oscillator.stop(
-          startTime +
-          tone.duration /
-          1000
+          start +
+          tone.duration / 1000
         );
 
 
-        startTime +=
-          tone.duration /
-          1000 +
+        start +=
+          tone.duration / 1000 +
           0.04;
 
       }
@@ -2278,12 +2701,11 @@ function playToneSequence(
     setTimeout(
       function() {
 
-
         context.close();
 
-
       },
-      1000
+
+      1200
     );
 
 
@@ -2302,9 +2724,9 @@ function playToneSequence(
 
 
 
-/***********************************************************
- * HTML ESCAPING
- ***********************************************************/
+/*************************************************************
+ * HTML SAFETY
+ *************************************************************/
 
 
 function escapeHtml(
@@ -2312,9 +2734,7 @@ function escapeHtml(
 ) {
 
 
-  return String(
-    value
-  )
+  return String(value)
 
     .replaceAll(
       "&",
@@ -2345,13 +2765,12 @@ function escapeHtml(
 
 
 
-/***********************************************************
+/*************************************************************
  * START
- ***********************************************************/
+ *************************************************************/
 
 
 initializeScanner();
-
 
 </script>
 

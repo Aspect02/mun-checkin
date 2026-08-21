@@ -154,6 +154,11 @@
     }
 
 
+    /*
+     * The school barcode is vertical on the ID,
+     * so this visual target is tall/narrow.
+     */
+
     .scan-guide {
 
       position:
@@ -172,8 +177,7 @@
         37%;
 
       border:
-        3px solid
-        rgba(255,255,255,0.95);
+        3px solid white;
 
       border-radius:
         12px;
@@ -359,9 +363,9 @@
     }
 
 
-    /******************************************************
-     * REGISTRATION
-     ******************************************************/
+    /*********************************************************
+     * REGISTRATION PANEL
+     *********************************************************/
 
 
     #registrationPanel {
@@ -514,9 +518,9 @@
     }
 
 
-    /******************************************************
+    /*********************************************************
      * MANUAL ID
-     ******************************************************/
+     *********************************************************/
 
 
     .manual-section {
@@ -586,8 +590,10 @@
     ) {
 
       h1 {
+
         font-size:
           32px;
+
       }
 
 
@@ -661,6 +667,7 @@
 
     <div class="scan-guide"></div>
 
+
     <div class="scan-line"></div>
 
 
@@ -685,7 +692,9 @@
 
 
 
-  <!-- NEW MEMBER REGISTRATION -->
+  <!-- ======================================================
+       NEW MEMBER REGISTRATION
+       ====================================================== -->
 
 
   <div id="registrationPanel">
@@ -700,7 +709,8 @@
 
     <p>
 
-      Your Student ID is not registered.
+      This Student ID is not currently registered.
+
       If you are joining Model UN,
       enter your information below.
 
@@ -709,6 +719,7 @@
 
 
     <div class="form-group">
+
 
       <label for="newMemberName">
 
@@ -720,13 +731,16 @@
       <input
         id="newMemberName"
         type="text"
-        placeholder="First and last name">
+        placeholder="First and last name"
+        autocomplete="name">
+
 
     </div>
 
 
 
     <div class="form-group">
+
 
       <label for="newMemberEmail">
 
@@ -738,13 +752,16 @@
       <input
         id="newMemberEmail"
         type="email"
-        placeholder="School email">
+        placeholder="School email"
+        autocomplete="email">
+
 
     </div>
 
 
 
     <div class="form-group">
+
 
       <label for="newMemberGrade">
 
@@ -793,6 +810,7 @@
 
       </select>
 
+
     </div>
 
 
@@ -826,7 +844,9 @@
 
 
 
-  <!-- MANUAL ID -->
+  <!-- ======================================================
+       MANUAL ID
+       ====================================================== -->
 
 
   <div class="manual-section">
@@ -865,9 +885,10 @@
   </div>
 
 
+
   <div class="small-status">
 
-    Code 39 • Model UN Attendance
+    Code 39 • Model UN Attendance System
 
   </div>
 
@@ -885,9 +906,12 @@
 
 
 /*
- * IMPORTANT:
+ * PASTE YOUR GOOGLE APPS SCRIPT /exec URL BELOW.
  *
- * Paste your Google Apps Script /exec URL here.
+ * Example:
+ *
+ * const APPS_SCRIPT_URL =
+ *   "https://script.google.com/macros/s/ABC123/exec";
  */
 
 const APPS_SCRIPT_URL =
@@ -897,7 +921,7 @@ const APPS_SCRIPT_URL =
 
 
 /*
- * Student result remains visible this long.
+ * How long a result remains on screen.
  */
 
 const RESULT_DISPLAY_MS =
@@ -906,7 +930,7 @@ const RESULT_DISPLAY_MS =
 
 
 /*
- * Minimum delay between physical card scans.
+ * Minimum delay between physical scans.
  */
 
 const SCAN_COOLDOWN_MS =
@@ -915,7 +939,7 @@ const SCAN_COOLDOWN_MS =
 
 
 /*
- * Camera checks approximately 8 times per second.
+ * Barcode detection interval.
  */
 
 const DETECTION_INTERVAL_MS =
@@ -1021,8 +1045,7 @@ let lastAcceptedScan =
 
 
 /*
- * Stores the unknown barcode while
- * the registration form is open.
+ * The barcode ID waiting to be registered.
  */
 
 let pendingStudentId =
@@ -1043,11 +1066,14 @@ async function initializeScanner() {
     !navigator.mediaDevices.getUserMedia
   ) {
 
+
     scannerError(
       "Camera access is not supported by this browser."
     );
 
+
     return;
+
   }
 
 
@@ -1055,11 +1081,14 @@ async function initializeScanner() {
     !("BarcodeDetector" in window)
   ) {
 
+
     scannerError(
       "Barcode scanning is not supported by this browser."
     );
 
+
     return;
+
   }
 
 
@@ -1077,13 +1106,20 @@ async function initializeScanner() {
       )
     ) {
 
+
       scannerError(
         "This browser does not support Code 39 barcodes."
       );
 
+
       return;
+
     }
 
+
+    /*
+     * We know the school ID uses Code 39.
+     */
 
     detector =
       new BarcodeDetector({
@@ -1117,7 +1153,7 @@ async function initializeScanner() {
 
 
 /*************************************************************
- * CAMERA
+ * START CAMERA
  *************************************************************/
 
 
@@ -1163,9 +1199,11 @@ async function startCamera() {
     await video.play();
 
 
-    /*
-     * Attempt continuous autofocus.
-     */
+
+    /*********************************************************
+     * TRY CONTINUOUS AUTOFOCUS
+     *********************************************************/
+
 
     const track =
       stream
@@ -1221,6 +1259,7 @@ async function startCamera() {
     }
 
 
+
     scanning =
       true;
 
@@ -1250,7 +1289,7 @@ async function startCamera() {
 
 
 /*************************************************************
- * CAMERA LOOP
+ * CAMERA SCAN LOOP
  *************************************************************/
 
 
@@ -1326,7 +1365,7 @@ async function scanLoop() {
 
 
 /*************************************************************
- * PHYSICAL BARCODE
+ * PHYSICAL BARCODE DETECTED
  *************************************************************/
 
 
@@ -1339,7 +1378,10 @@ function physicalBarcodeDetected(
     Date.now();
 
 
-  if (scannerLocked) {
+  if (
+    scannerLocked
+  ) {
+
     return;
   }
 
@@ -1376,7 +1418,10 @@ function startCheckIn(
 ) {
 
 
-  if (scannerLocked) {
+  if (
+    scannerLocked
+  ) {
+
     return;
   }
 
@@ -1402,7 +1447,7 @@ function startCheckIn(
 
 
   resultBox.innerHTML =
-    "Checking student ID...";
+    "Checking Student ID...";
 
 
   sendCheckIn(
@@ -1414,7 +1459,7 @@ function startCheckIn(
 
 
 /*************************************************************
- * SEND CHECK-IN
+ * SEND CHECK-IN REQUEST
  *************************************************************/
 
 
@@ -1480,9 +1525,9 @@ function handleCheckInResponse(
 ) {
 
 
-  /*
-   * NORMAL SUCCESS
-   */
+  /*********************************************************
+   * SUCCESSFUL EXISTING MEMBER CHECK-IN
+   *********************************************************/
 
   if (
     data &&
@@ -1508,9 +1553,11 @@ function handleCheckInResponse(
 
 
 
-  /*
-   * NEW MEMBER
-   */
+  /*********************************************************
+   * UNKNOWN ID
+   *
+   * ONLY THIS RESULT OPENS REGISTRATION.
+   *********************************************************/
 
   if (
     data &&
@@ -1535,13 +1582,9 @@ function handleCheckInResponse(
 
 
 
-  /*
-   * ALREADY CHECKED IN
-   *
-   * This is specifically what happens
-   * if somebody registers and then
-   * scans the same card again.
-   */
+  /*********************************************************
+   * ID EXISTS + SAME ID ALREADY ATTENDED THIS EVENT
+   *********************************************************/
 
   if (
     data &&
@@ -1559,7 +1602,7 @@ function handleCheckInResponse(
     );
 
 
-    errorSound();
+    alreadyCheckedSound();
 
 
     scheduleReset();
@@ -1571,9 +1614,9 @@ function handleCheckInResponse(
 
 
 
-  /*
-   * ALL OTHER FAILURES
-   */
+  /*********************************************************
+   * OTHER ERRORS
+   *********************************************************/
 
   showFailure(
 
@@ -1653,150 +1696,186 @@ function openRegistration() {
  *************************************************************/
 
 
-registerButton.addEventListener(
-  "click",
-  function() {
+registerButton
+  .addEventListener(
+    "click",
+    function() {
 
 
-    const name =
-      newMemberName.value
-        .trim();
+      const name =
+        newMemberName.value
+          .trim();
 
 
-    const email =
-      newMemberEmail.value
-        .trim();
+      const email =
+        newMemberEmail.value
+          .trim();
 
 
-    const grade =
-      newMemberGrade.value;
+      const grade =
+        newMemberGrade.value;
 
 
-    if (!name) {
-
-
-      alert(
-        "Please enter your full name."
-      );
-
-
-      return;
-
-    }
-
-
-    if (!email) {
-
-
-      alert(
-        "Please enter your school email."
-      );
-
-
-      return;
-
-    }
-
-
-    if (!grade) {
-
-
-      alert(
-        "Please select your grade."
-      );
-
-
-      return;
-
-    }
-
-
-    if (!pendingStudentId) {
-
-
-      alert(
-        "Student ID is no longer available. Please scan your card again."
-      );
-
-
-      resetScanner();
-
-
-      return;
-
-    }
-
-
-    registerButton.disabled =
-      true;
-
-
-    cancelRegistration.disabled =
-      true;
-
-
-    statusBox.textContent =
-      "Registering...";
-
-
-    jsonpRequest(
-
-      {
-
-        action:
-          "register",
-
-        id:
-          pendingStudentId,
-
-        name:
-          name,
-
-        email:
-          email,
-
-        grade:
-          grade
-
-      },
-
-
-      function(data) {
-
-
-        handleRegistrationResponse(
-          data
-        );
-
-      },
-
-
-      function() {
+      if (!name) {
 
 
         alert(
-          "Could not connect to registration system."
+          "Please enter your full name."
         );
 
 
-        registerButton.disabled =
-          false;
-
-
-        cancelRegistration.disabled =
-          false;
+        return;
 
       }
 
-    );
 
-  }
-);
+      if (!email) {
+
+
+        alert(
+          "Please enter your school email."
+        );
+
+
+        return;
+
+      }
+
+
+      if (!grade) {
+
+
+        alert(
+          "Please select your grade."
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        !pendingStudentId
+      ) {
+
+
+        alert(
+          "Student ID was lost. Please scan your card again."
+        );
+
+
+        resetScanner();
+
+
+        return;
+
+      }
+
+
+      registerButton.disabled =
+        true;
+
+
+      cancelRegistration.disabled =
+        true;
+
+
+      statusBox.className =
+        "busy";
+
+
+      statusBox.textContent =
+        "Registering...";
+
+
+      sendRegistration(
+
+        pendingStudentId,
+
+        name,
+
+        email,
+
+        grade
+
+      );
+
+    }
+  );
 
 
 
 /*************************************************************
- * REGISTRATION RESPONSE
+ * SEND REGISTRATION REQUEST
+ *************************************************************/
+
+
+function sendRegistration(
+  studentId,
+  name,
+  email,
+  grade
+) {
+
+
+  jsonpRequest(
+
+    {
+
+      action:
+        "register",
+
+      id:
+        studentId,
+
+      name:
+        name,
+
+      email:
+        email,
+
+      grade:
+        grade
+
+    },
+
+
+    function(data) {
+
+
+      handleRegistrationResponse(
+        data
+      );
+
+    },
+
+
+    function() {
+
+
+      alert(
+        "Could not connect to registration system."
+      );
+
+
+      registerButton.disabled =
+        false;
+
+
+      cancelRegistration.disabled =
+        false;
+
+    }
+
+  );
+
+}
+
+
+
+/*************************************************************
+ * HANDLE REGISTRATION RESPONSE
  *************************************************************/
 
 
@@ -1805,13 +1884,15 @@ function handleRegistrationResponse(
 ) {
 
 
-  /*
-   * REGISTRATION SUCCESS
-   */
+  /*********************************************************
+   * BRAND NEW MEMBER SUCCESS
+   *********************************************************/
 
   if (
     data &&
-    data.success
+    data.success &&
+    data.code ===
+      "REGISTRATION_SUCCESS"
   ) {
 
 
@@ -1843,10 +1924,50 @@ function handleRegistrationResponse(
 
 
 
-  /*
-   * SOMEHOW ALREADY REGISTERED AND
-   * ALREADY CHECKED IN
-   */
+  /*********************************************************
+   * ID WAS ALREADY REGISTERED,
+   * BUT NORMAL CHECK-IN SUCCEEDED.
+   *
+   * This can happen if the database changed while
+   * registration was open.
+   *********************************************************/
+
+  if (
+    data &&
+    data.success &&
+    data.code ===
+      "CHECKIN_SUCCESS"
+  ) {
+
+
+    registrationPanel.style.display =
+      "none";
+
+
+    showSuccess(
+      data,
+      false
+    );
+
+
+    successSound();
+
+
+    clearRegistration();
+
+
+    scheduleReset();
+
+
+    return;
+
+  }
+
+
+
+  /*********************************************************
+   * ID ALREADY REGISTERED + ALREADY CHECKED IN
+   *********************************************************/
 
   if (
     data &&
@@ -1863,12 +1984,12 @@ function handleRegistrationResponse(
 
       data.name || "",
 
-      "Already registered and checked in."
+      "Already checked in."
 
     );
 
 
-    errorSound();
+    alreadyCheckedSound();
 
 
     clearRegistration();
@@ -1883,56 +2004,17 @@ function handleRegistrationResponse(
 
 
 
-  /*
-   * ID NOW EXISTS BUT WAS NOT CHECKED IN.
-   *
-   * Ask the user to scan again.
-   */
-
-  if (
-    data &&
-    data.code ===
-      "ID_ALREADY_REGISTERED"
-  ) {
-
-
-    registrationPanel.style.display =
-      "none";
-
-
-    showFailure(
-
-      data.name || "",
-
-      "Already registered. Please scan again."
-
-    );
-
-
-    errorSound();
-
-
-    clearRegistration();
-
-
-    scheduleReset();
-
-
-    return;
-
-  }
-
-
-
-  /*
-   * VALIDATION ERROR
-   */
+  /*********************************************************
+   * OTHER REGISTRATION FAILURE
+   *********************************************************/
 
   alert(
+
     data &&
     data.message
       ? data.message
       : "Registration failed."
+
   );
 
 
@@ -1952,27 +2034,28 @@ function handleRegistrationResponse(
  *************************************************************/
 
 
-cancelRegistration.addEventListener(
-  "click",
-  function() {
+cancelRegistration
+  .addEventListener(
+    "click",
+    function() {
 
 
-    registrationPanel.style.display =
-      "none";
+      registrationPanel.style.display =
+        "none";
 
 
-    clearRegistration();
+      clearRegistration();
 
 
-    resetScanner();
+      resetScanner();
 
-  }
-);
+    }
+  );
 
 
 
 /*************************************************************
- * CLEAR REGISTRATION
+ * CLEAR REGISTRATION DATA
  *************************************************************/
 
 
@@ -2007,7 +2090,7 @@ function clearRegistration() {
 
 
 /*************************************************************
- * DISPLAY SUCCESS
+ * SHOW SUCCESS
  *************************************************************/
 
 
@@ -2110,7 +2193,7 @@ function showSuccess(
 
 
 /*************************************************************
- * DISPLAY FAILURE
+ * SHOW FAILURE
  *************************************************************/
 
 
@@ -2167,67 +2250,69 @@ function showFailure(
 
 
 /*************************************************************
- * MANUAL STUDENT ID
+ * MANUAL ID FALLBACK
  *************************************************************/
 
 
-manualButton.addEventListener(
-  "click",
-  function() {
+manualButton
+  .addEventListener(
+    "click",
+    function() {
 
 
-    const id =
-      manualId.value
-        .trim();
+      const id =
+        manualId.value
+          .trim();
 
 
-    if (!id) {
+      if (!id) {
 
 
-      showFailure(
-        "",
-        "Enter a Student ID."
+        showFailure(
+          "",
+          "Enter a Student ID."
+        );
+
+
+        return;
+
+      }
+
+
+      startCheckIn(
+        id
       );
 
+    }
+  );
 
-      return;
+
+
+manualId
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+
+      if (
+        event.key === "Enter"
+      ) {
+
+
+        event.preventDefault();
+
+
+        manualButton.click();
+
+      }
 
     }
-
-
-    startCheckIn(
-      id
-    );
-
-  }
-);
-
-
-
-manualId.addEventListener(
-  "keydown",
-  function(event) {
-
-
-    if (
-      event.key === "Enter"
-    ) {
-
-
-      event.preventDefault();
-
-
-      manualButton.click();
-
-    }
-
-  }
-);
+  );
 
 
 
 /*************************************************************
- * RESET
+ * RESET SCANNER
  *************************************************************/
 
 
@@ -2280,7 +2365,7 @@ function resetScanner() {
 
 
 /*************************************************************
- * READY
+ * READY STATE
  *************************************************************/
 
 
@@ -2299,7 +2384,7 @@ function showReady() {
 
 
 /*************************************************************
- * SCANNER ERROR
+ * FATAL SCANNER ERROR
  *************************************************************/
 
 
@@ -2384,13 +2469,17 @@ function jsonpRequest(
         true;
 
 
-      clearTimeout(timeout);
+      clearTimeout(
+        timeout
+      );
 
 
       try {
 
 
-        successHandler(data);
+        successHandler(
+          data
+        );
 
 
       }
@@ -2458,7 +2547,9 @@ function jsonpRequest(
         true;
 
 
-      clearTimeout(timeout);
+      clearTimeout(
+        timeout
+      );
 
 
       cleanup();
@@ -2524,7 +2615,9 @@ function jsonpRequest(
 
 
       script.parentNode
-        .removeChild(script);
+        .removeChild(
+          script
+        );
 
     }
 
@@ -2532,7 +2625,9 @@ function jsonpRequest(
 
 
   document.body
-    .appendChild(script);
+    .appendChild(
+      script
+    );
 
 }
 
@@ -2549,13 +2644,19 @@ function successSound() {
   playTones([
 
     {
-      frequency: 660,
-      duration: 90
+      frequency:
+        660,
+
+      duration:
+        90
     },
 
     {
-      frequency: 880,
-      duration: 140
+      frequency:
+        880,
+
+      duration:
+        140
     }
 
   ]);
@@ -2570,13 +2671,46 @@ function errorSound() {
   playTones([
 
     {
-      frequency: 300,
-      duration: 170
+      frequency:
+        300,
+
+      duration:
+        170
     },
 
     {
-      frequency: 220,
-      duration: 190
+      frequency:
+        220,
+
+      duration:
+        190
+    }
+
+  ]);
+
+}
+
+
+
+function alreadyCheckedSound() {
+
+
+  playTones([
+
+    {
+      frequency:
+        420,
+
+      duration:
+        100
+    },
+
+    {
+      frequency:
+        420,
+
+      duration:
+        100
     }
 
   ]);
@@ -2591,19 +2725,30 @@ function newMemberSound() {
   playTones([
 
     {
-      frequency: 500,
-      duration: 100
+      frequency:
+        500,
+
+      duration:
+        100
     },
 
     {
-      frequency: 620,
-      duration: 100
+      frequency:
+        620,
+
+      duration:
+        110
     }
 
   ]);
 
 }
 
+
+
+/*************************************************************
+ * SOUND ENGINE
+ *************************************************************/
 
 
 function playTones(
@@ -2621,8 +2766,12 @@ function playTones(
       window.webkitAudioContext;
 
 
-    if (!AudioContextClass) {
+    if (
+      !AudioContextClass
+    ) {
+
       return;
+
     }
 
 
@@ -2691,7 +2840,9 @@ function playTones(
 
 
         start +=
+
           tone.duration / 1000 +
+
           0.04;
 
       }
@@ -2701,7 +2852,9 @@ function playTones(
     setTimeout(
       function() {
 
+
         context.close();
+
 
       },
 
@@ -2766,11 +2919,12 @@ function escapeHtml(
 
 
 /*************************************************************
- * START
+ * START SYSTEM
  *************************************************************/
 
 
 initializeScanner();
+
 
 </script>
 
