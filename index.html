@@ -2,651 +2,922 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0">
 
-  <title>Model UN Barcode Diagnostic</title>
+  <title>Model UN Check-In</title>
+
 
   <style>
+
     * {
       box-sizing: border-box;
     }
 
     body {
+
       margin: 0;
-      padding: 24px;
+      min-height: 100vh;
 
       font-family:
         Arial,
         Helvetica,
         sans-serif;
 
-      background: #071a33;
-      color: white;
+      background:
+        #071a33;
 
-      text-align: center;
+      color:
+        white;
+
+      display:
+        flex;
+
+      justify-content:
+        center;
+
+      align-items:
+        center;
+
+      padding:
+        24px;
+
     }
+
 
     .container {
-      max-width: 900px;
-      margin: auto;
+
+      width:
+        100%;
+
+      max-width:
+        850px;
+
+      text-align:
+        center;
+
     }
+
+
+    .club-label {
+
+      letter-spacing:
+        4px;
+
+      opacity:
+        0.65;
+
+      font-size:
+        15px;
+
+      margin-bottom:
+        7px;
+
+    }
+
 
     h1 {
-      margin-bottom: 8px;
+
+      margin:
+        0 0 10px 0;
+
+      font-size:
+        42px;
+
     }
 
-    .subtitle {
-      color: #b9c5d8;
-      margin-bottom: 25px;
+
+    #status {
+
+      margin-bottom:
+        20px;
+
+      font-size:
+        18px;
+
+      font-weight:
+        bold;
+
     }
 
-    .status {
-      padding: 12px;
-      margin-bottom: 20px;
 
-      border-radius: 10px;
+    .ready {
 
-      background:
-        rgba(255,255,255,0.08);
+      color:
+        #70e89e;
+
     }
+
+
+    .busy {
+
+      color:
+        #ffd166;
+
+    }
+
 
     .camera-box {
-      position: relative;
 
-      width: 100%;
+      position:
+        relative;
 
-      background: black;
+      width:
+        100%;
 
-      border-radius: 15px;
+      overflow:
+        hidden;
 
-      overflow: hidden;
-    }
+      border-radius:
+        18px;
 
-    video {
-      width: 100%;
-      display: block;
-
-      max-height: 520px;
-
-      object-fit: cover;
-    }
-
-    .guide {
-      position: absolute;
-
-      top: 10%;
-      bottom: 10%;
-
-      left: 38%;
-      right: 38%;
+      background:
+        black;
 
       border:
-        3px solid white;
+        2px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.25
+        );
 
-      border-radius: 10px;
-
-      pointer-events: none;
     }
 
-    .guide-text {
-      position: absolute;
 
-      bottom: 14px;
+    video {
 
-      width: 100%;
+      display:
+        block;
 
-      text-align: center;
+      width:
+        100%;
 
-      font-weight: bold;
+      max-height:
+        520px;
 
-      text-shadow:
-        0 2px 5px black;
+      object-fit:
+        cover;
+
     }
 
-    .controls {
-      display: flex;
 
-      gap: 10px;
+    /*
+     * Your school's barcode is vertical
+     * on the physical ID.
+     */
 
-      margin-top: 18px;
+    .scan-guide {
 
-      flex-wrap: wrap;
+      position:
+        absolute;
 
-      justify-content: center;
+      top:
+        8%;
+
+      bottom:
+        8%;
+
+      left:
+        37%;
+
+      right:
+        37%;
+
+      border:
+        3px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.95
+        );
+
+      border-radius:
+        12px;
+
+      pointer-events:
+        none;
+
     }
 
-    select,
-    button {
-      padding: 11px 15px;
 
-      border: none;
+    .scan-line {
 
-      border-radius: 8px;
+      position:
+        absolute;
 
-      font-size: 16px;
-    }
+      top:
+        12%;
 
-    button {
-      cursor: pointer;
+      bottom:
+        12%;
 
-      background: white;
-      color: #071a33;
+      left:
+        50%;
 
-      font-weight: bold;
-    }
-
-    .result {
-      margin-top: 25px;
-
-      padding: 25px;
-
-      border-radius: 14px;
+      width:
+        3px;
 
       background:
-        rgba(255,255,255,0.08);
+        #ff5252;
 
-      min-height: 130px;
+      box-shadow:
+        0 0 10px
+        rgba(
+          255,
+          82,
+          82,
+          0.8
+        );
+
+      pointer-events:
+        none;
+
     }
 
-    .detected {
+
+    .instruction {
+
+      margin-top:
+        15px;
+
+      font-size:
+        18px;
+
+      opacity:
+        0.85;
+
+    }
+
+
+    #result {
+
+      margin-top:
+        22px;
+
+      min-height:
+        135px;
+
+      padding:
+        22px;
+
+      border-radius:
+        14px;
+
       background:
-        rgba(32,180,95,0.20);
+        rgba(
+          255,
+          255,
+          255,
+          0.08
+        );
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      transition:
+        background 0.2s ease;
+
     }
 
-    .big {
-      font-size: 30px;
-      font-weight: bold;
 
-      margin-bottom: 10px;
+    .success {
+
+      background:
+        rgba(
+          38,
+          180,
+          90,
+          0.22
+        ) !important;
+
     }
 
-    .value {
-      font-family: monospace;
 
-      font-size: 24px;
+    .error {
 
-      word-break: break-all;
+      background:
+        rgba(
+          220,
+          55,
+          55,
+          0.22
+        ) !important;
 
-      margin-top: 10px;
     }
 
-    .debug {
-      margin-top: 25px;
 
-      padding: 18px;
+    .student-name {
 
-      text-align: left;
+      font-size:
+        34px;
 
-      background: #020a15;
+      font-weight:
+        bold;
 
-      border-radius: 10px;
+      margin-bottom:
+        7px;
 
-      font-family: monospace;
-
-      font-size: 13px;
-
-      white-space: pre-wrap;
-
-      max-height: 300px;
-
-      overflow-y: auto;
     }
 
-    canvas {
-      display: none;
+
+    .event-name {
+
+      font-size:
+        20px;
+
+      margin-bottom:
+        7px;
+
     }
 
-    @media (max-width: 600px) {
 
-      .guide {
-        left: 34%;
-        right: 34%;
+    .points {
+
+      font-size:
+        36px;
+
+      font-weight:
+        bold;
+
+      color:
+        #70e89e;
+
+    }
+
+
+    .timestamp {
+
+      margin-top:
+        8px;
+
+      opacity:
+        0.7;
+
+      font-size:
+        15px;
+
+    }
+
+
+    .error-title {
+
+      font-size:
+        27px;
+
+      font-weight:
+        bold;
+
+      color:
+        #ff9999;
+
+    }
+
+
+    .error-name {
+
+      font-size:
+        20px;
+
+      margin-bottom:
+        7px;
+
+    }
+
+
+    .manual-section {
+
+      margin-top:
+        24px;
+
+      padding-top:
+        18px;
+
+      border-top:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.16
+        );
+
+    }
+
+
+    .manual-label {
+
+      font-size:
+        14px;
+
+      opacity:
+        0.6;
+
+      margin-bottom:
+        9px;
+
+    }
+
+
+    .manual-row {
+
+      display:
+        flex;
+
+      gap:
+        10px;
+
+    }
+
+
+    input {
+
+      flex:
+        1;
+
+      min-width:
+        0;
+
+      padding:
+        12px;
+
+      border:
+        none;
+
+      border-radius:
+        8px;
+
+      font-size:
+        16px;
+
+    }
+
+
+    button {
+
+      padding:
+        12px 18px;
+
+      border:
+        none;
+
+      border-radius:
+        8px;
+
+      background:
+        white;
+
+      color:
+        #071a33;
+
+      font-size:
+        16px;
+
+      font-weight:
+        bold;
+
+      cursor:
+        pointer;
+
+    }
+
+
+    button:disabled {
+
+      opacity:
+        0.4;
+
+      cursor:
+        not-allowed;
+
+    }
+
+
+    .small-status {
+
+      margin-top:
+        12px;
+
+      font-size:
+        12px;
+
+      opacity:
+        0.4;
+
+    }
+
+
+    @media (
+      max-width: 600px
+    ) {
+
+      h1 {
+        font-size:
+          32px;
+      }
+
+
+      .scan-guide {
+
+        left:
+          33%;
+
+        right:
+          33%;
+
+      }
+
+
+      .manual-row {
+
+        flex-direction:
+          column;
+
       }
 
     }
+
   </style>
+
 </head>
+
 
 
 <body>
 
+
 <div class="container">
 
-  <h1>
-    Model UN Barcode Diagnostic
-  </h1>
 
-  <div class="subtitle">
-    This page tests your school ID barcode only.
-    Nothing is sent to Google Sheets.
+  <div class="club-label">
+    MODEL UNITED NATIONS
   </div>
+
+
+  <h1>
+    Check-In
+  </h1>
 
 
   <div
     id="status"
-    class="status">
+    class="busy">
 
-    Waiting to start...
+    Starting camera...
 
   </div>
+
 
 
   <div class="camera-box">
 
+
     <video
       id="video"
       autoplay
-      playsinline
-      muted>
+      muted
+      playsinline>
     </video>
 
-    <div class="guide"></div>
 
-    <div class="guide-text">
-      Hold barcode inside this vertical box
+    <div class="scan-guide"></div>
+
+
+    <div class="scan-line"></div>
+
+
+  </div>
+
+
+
+  <div class="instruction">
+
+    Hold your student ID barcode
+    inside the box.
+
+  </div>
+
+
+
+  <div id="result">
+
+    Initializing scanner...
+
+  </div>
+
+
+
+  <div class="manual-section">
+
+
+    <div class="manual-label">
+
+      ID not scanning?
+      Enter the Student ID manually.
+
     </div>
 
-  </div>
+
+    <div class="manual-row">
 
 
-  <div class="controls">
+      <input
+        id="manualId"
+        type="text"
+        placeholder="Student ID"
+        autocomplete="off">
 
-    <select id="cameraSelect">
-      <option>
-        Loading cameras...
-      </option>
-    </select>
 
-    <button
-      id="startButton"
-      type="button">
+      <button
+        id="manualButton"
+        type="button">
 
-      Start Camera
+        Check In
 
-    </button>
+      </button>
 
-    <button
-      id="stopButton"
-      type="button">
 
-      Stop
+    </div>
 
-    </button>
 
   </div>
 
 
-  <div
-    id="result"
-    class="result">
 
-    No barcode detected yet.
+  <div class="small-status">
 
-  </div>
-
-
-  <div
-    id="debug"
-    class="debug">
-
-Diagnostic log:
+    Code 39 scanner
 
   </div>
 
-
-  <canvas id="canvas0"></canvas>
-  <canvas id="canvas90"></canvas>
 
 </div>
 
 
+
 <script>
 
+
+/***********************************************************
+ * CONFIGURATION
+ ***********************************************************/
+
+
+// ---------------------------------------------------------
+// PASTE YOUR GOOGLE APPS SCRIPT /exec URL BELOW
+// ---------------------------------------------------------
+
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxwLRFPpqwTbtcsS5Zw0nzl_Y3WYrUbXvGX3Ar4zLI3NVjbJYZV17JAUGZTZCP1rQJRyg/exec";
+
+
+// How long the success/error result stays visible.
+const RESULT_DISPLAY_MS =
+  2500;
+
+
+// Minimum delay before accepting another physical scan.
+const SCAN_COOLDOWN_MS =
+  3200;
+
+
+// Delay between camera detection attempts.
+const DETECTION_INTERVAL_MS =
+  120;
+
+
+
+/***********************************************************
+ * ELEMENTS
+ ***********************************************************/
+
+
 const video =
-  document.getElementById("video");
-
-const statusBox =
-  document.getElementById("status");
-
-const resultBox =
-  document.getElementById("result");
-
-const debugBox =
-  document.getElementById("debug");
-
-const cameraSelect =
-  document.getElementById("cameraSelect");
-
-const startButton =
-  document.getElementById("startButton");
-
-const stopButton =
-  document.getElementById("stopButton");
-
-const canvas0 =
-  document.getElementById("canvas0");
-
-const canvas90 =
-  document.getElementById("canvas90");
-
-
-let stream = null;
-let detector = null;
-let scanning = false;
-let scanTimer = null;
-let lastDetectedValue = "";
-
-
-function log(message) {
-
-  const time =
-    new Date()
-      .toLocaleTimeString();
-
-  debugBox.textContent +=
-    "\n[" +
-    time +
-    "] " +
-    message;
-
-  debugBox.scrollTop =
-    debugBox.scrollHeight;
-}
-
-
-
-async function initialize() {
-
-  log(
-    "Browser: " +
-    navigator.userAgent
+  document.getElementById(
+    "video"
   );
 
+
+const statusBox =
+  document.getElementById(
+    "status"
+  );
+
+
+const resultBox =
+  document.getElementById(
+    "result"
+  );
+
+
+const manualId =
+  document.getElementById(
+    "manualId"
+  );
+
+
+const manualButton =
+  document.getElementById(
+    "manualButton"
+  );
+
+
+
+/***********************************************************
+ * STATE
+ ***********************************************************/
+
+
+let detector =
+  null;
+
+
+let stream =
+  null;
+
+
+let scannerLocked =
+  false;
+
+
+let scanning =
+  false;
+
+
+let lastAcceptedScan =
+  0;
+
+
+let lastBarcode =
+  null;
+
+
+let lastBarcodeSeenAt =
+  0;
+
+
+
+/***********************************************************
+ * INITIALIZE SCANNER
+ ***********************************************************/
+
+
+async function initializeScanner() {
+
+
+  // -------------------------------------------------------
+  // VERIFY CAMERA SUPPORT
+  // -------------------------------------------------------
 
   if (
     !navigator.mediaDevices ||
     !navigator.mediaDevices.getUserMedia
   ) {
 
-    statusBox.textContent =
-      "❌ This browser does not provide camera access.";
 
-    log(
-      "navigator.mediaDevices.getUserMedia unavailable."
+    scannerError(
+      "Camera access is not supported by this browser."
     );
 
+
     return;
+
   }
 
+
+  // -------------------------------------------------------
+  // VERIFY BARCODE API
+  // -------------------------------------------------------
 
   if (
     !("BarcodeDetector" in window)
   ) {
 
-    statusBox.textContent =
-      "❌ BarcodeDetector is not supported by this browser.";
 
-    log(
-      "Native BarcodeDetector API unavailable."
+    scannerError(
+      "Barcode scanning is not supported by this browser."
     );
 
-    log(
-      "If you are using Chrome, make sure it is updated."
-    );
 
     return;
+
   }
 
 
   try {
 
-    const supportedFormats =
+
+    const formats =
       await BarcodeDetector
         .getSupportedFormats();
 
 
-    log(
-      "Supported barcode formats:"
-    );
-
-    log(
-      supportedFormats.join(", ")
-    );
-
-
-    const wantedFormats = [
-
-      "code_128",
-      "code_39",
-      "code_93",
-      "codabar",
-      "ean_13",
-      "ean_8",
-      "itf",
-      "upc_a",
-      "upc_e"
-
-    ];
-
-
-    const usableFormats =
-      wantedFormats.filter(
-        format =>
-          supportedFormats.includes(
-            format
-          )
-      );
-
-
     if (
-      usableFormats.length === 0
+      !formats.includes(
+        "code_39"
+      )
     ) {
 
-      statusBox.textContent =
-        "❌ Browser supports barcode scanning, but no useful 1D formats.";
 
-      log(
-        "No compatible 1D barcode formats found."
+      scannerError(
+        "This browser does not support Code 39 barcodes."
       );
 
+
       return;
+
     }
 
+
+    /*
+     * IMPORTANT:
+     *
+     * We now know the school IDs use Code 39,
+     * so only scan for Code 39.
+     *
+     * This reduces unnecessary work and
+     * improves reliability.
+     */
 
     detector =
       new BarcodeDetector({
-        formats: usableFormats
+
+        formats: [
+          "code_39"
+        ]
+
       });
 
 
-    log(
-      "Detector initialized with:"
-    );
+    await startCamera();
 
-    log(
-      usableFormats.join(", ")
-    );
-
-
-    await requestCameraPermission();
 
   }
 
   catch(error) {
 
-    statusBox.textContent =
-      "❌ Detector initialization failed.";
 
-    log(
-      "Initialization error: " +
+    console.error(
       error
     );
+
+
+    scannerError(
+      "Scanner could not be initialized."
+    );
+
   }
 
 }
 
 
 
-async function requestCameraPermission() {
-
-  try {
-
-    const temporaryStream =
-      await navigator.mediaDevices
-        .getUserMedia({
-
-          video: true,
-          audio: false
-
-        });
-
-
-    temporaryStream
-      .getTracks()
-      .forEach(
-        track =>
-          track.stop()
-      );
-
-
-    log(
-      "Camera permission granted."
-    );
-
-
-    await loadCameraList();
-
-
-    statusBox.textContent =
-      "Camera permission granted. Press Start Camera.";
-
-  }
-
-  catch(error) {
-
-    statusBox.textContent =
-      "❌ Camera permission denied.";
-
-    log(
-      "Camera permission error: " +
-      error
-    );
-  }
-
-}
-
-
-
-async function loadCameraList() {
-
-  const devices =
-    await navigator.mediaDevices
-      .enumerateDevices();
-
-
-  const cameras =
-    devices.filter(
-      device =>
-        device.kind ===
-        "videoinput"
-    );
-
-
-  cameraSelect.innerHTML =
-    "";
-
-
-  if (
-    cameras.length === 0
-  ) {
-
-    cameraSelect.innerHTML =
-      "<option>No cameras found</option>";
-
-    log(
-      "No video input devices found."
-    );
-
-    return;
-  }
-
-
-  cameras.forEach(
-    (camera, index) => {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-
-      option.value =
-        camera.deviceId;
-
-
-      option.textContent =
-        camera.label ||
-        "Camera " +
-        (index + 1);
-
-
-      cameraSelect
-        .appendChild(
-          option
-        );
-
-    }
-  );
-
-
-  log(
-    cameras.length +
-    " camera(s) found."
-  );
-
-}
-
+/***********************************************************
+ * START CAMERA
+ ***********************************************************/
 
 
 async function startCamera() {
 
-  stopCamera();
-
-
-  const deviceId =
-    cameraSelect.value;
-
 
   try {
 
+
     const constraints = {
 
-      audio: false,
+      audio:
+        false,
 
       video: {
 
-        deviceId:
-          deviceId
-            ? {
-                exact:
-                  deviceId
-              }
-            : undefined,
-
         width: {
-          ideal: 1920
+          ideal:
+            1920
         },
 
         height: {
-          ideal: 1080
+          ideal:
+            1080
         },
 
         frameRate: {
-          ideal: 30
+          ideal:
+            30
         }
 
       }
@@ -668,412 +939,1004 @@ async function startCamera() {
     await video.play();
 
 
+
+    /*******************************************************
+     * TRY TO ENABLE CONTINUOUS AUTOFOCUS
+     *******************************************************/
+
+
     const track =
       stream
         .getVideoTracks()[0];
 
 
-    const settings =
-      track.getSettings();
-
-
-    log(
-      "Camera started."
-    );
-
-
-    log(
-      "Resolution: " +
-      settings.width +
-      " × " +
-      settings.height
-    );
-
-
     if (
-      settings.frameRate
-    ) {
-
-      log(
-        "Frame rate: " +
-        settings.frameRate
-      );
-    }
-
-
-    const capabilities =
+      track &&
       track.getCapabilities
-        ? track.getCapabilities()
-        : {};
-
-
-    if (
-      capabilities.focusMode
     ) {
 
-      log(
-        "Focus modes: " +
-        capabilities.focusMode.join(
-          ", "
-        )
-      );
-    }
 
-
-    /*
-     * Try continuous autofocus
-     * if the camera supports it.
-     */
-
-    if (
-      capabilities.focusMode &&
-      capabilities.focusMode.includes(
-        "continuous"
-      )
-    ) {
-
-      try {
-
-        await track.applyConstraints({
-
-          advanced: [
-            {
-              focusMode:
-                "continuous"
-            }
-          ]
-
-        });
-
-
-        log(
-          "Continuous autofocus enabled."
-        );
-
-      }
-
-      catch(error) {
-
-        log(
-          "Could not enable autofocus: " +
-          error
-        );
-      }
-
-    }
-
-
-    scanning =
-      true;
-
-
-    statusBox.textContent =
-      "🟢 SCANNING — hold ID barcode in the box";
-
-
-    scanLoop();
-
-  }
-
-  catch(error) {
-
-    statusBox.textContent =
-      "❌ Could not start camera.";
-
-    log(
-      "Camera error: " +
-      error
-    );
-  }
-
-}
-
-
-
-function stopCamera() {
-
-  scanning =
-    false;
-
-
-  if (
-    scanTimer
-  ) {
-
-    clearTimeout(
-      scanTimer
-    );
-
-    scanTimer =
-      null;
-  }
-
-
-  if (
-    stream
-  ) {
-
-    stream
-      .getTracks()
-      .forEach(
-        track =>
-          track.stop()
-      );
-
-
-    stream =
-      null;
-  }
-
-
-  video.srcObject =
-    null;
-
-}
-
-
-
-async function scanLoop() {
-
-  if (
-    !scanning
-  ) {
-
-    return;
-  }
-
-
-  try {
-
-    if (
-      video.readyState >= 2 &&
-      video.videoWidth > 0
-    ) {
-
-      /*
-       * Test original camera orientation.
-       */
-
-      const directResults =
-        await detector.detect(
-          video
-        );
+      const capabilities =
+        track.getCapabilities();
 
 
       if (
-        directResults.length > 0
+        capabilities.focusMode &&
+        capabilities.focusMode.includes(
+          "continuous"
+        )
       ) {
 
-        handleBarcode(
-          directResults[0],
-          "original frame"
-        );
 
-      }
-
-      else {
-
-        /*
-         * Also create a 90° rotated frame.
-         *
-         * This specifically helps with
-         * vertically printed school ID
-         * barcodes.
-         */
-
-        const rotated =
-          createRotatedFrame();
+        try {
 
 
-        const rotatedResults =
-          await detector.detect(
-            rotated
+          await track.applyConstraints({
+
+            advanced: [
+              {
+                focusMode:
+                  "continuous"
+              }
+            ]
+
+          });
+
+
+        }
+
+        catch(error) {
+
+
+          /*
+           * Autofocus is useful but optional.
+           */
+
+          console.log(
+            "Continuous autofocus unavailable."
           );
 
-
-        if (
-          rotatedResults.length > 0
-        ) {
-
-          handleBarcode(
-            rotatedResults[0],
-            "90° rotated frame"
-          );
         }
 
       }
 
     }
 
+
+
+    /*******************************************************
+     * READY
+     *******************************************************/
+
+
+    scanning =
+      true;
+
+
+    showReady();
+
+
+    scanLoop();
+
+
   }
 
   catch(error) {
 
-    log(
-      "Scan error: " +
+
+    console.error(
+      error
+    );
+
+
+    scannerError(
+      "Could not access the camera. Check browser camera permissions."
+    );
+
+  }
+
+}
+
+
+
+/***********************************************************
+ * CAMERA SCANNING LOOP
+ ***********************************************************/
+
+
+async function scanLoop() {
+
+
+  if (
+    !scanning
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+
+    if (
+      !scannerLocked &&
+      video.readyState >= 2 &&
+      video.videoWidth > 0
+    ) {
+
+
+      const barcodes =
+        await detector.detect(
+          video
+        );
+
+
+      if (
+        barcodes.length > 0
+      ) {
+
+
+        const barcode =
+          barcodes[0];
+
+
+        const value =
+          String(
+            barcode.rawValue || ""
+          ).trim();
+
+
+        if (value) {
+
+
+          handleDetectedBarcode(
+            value
+          );
+
+        }
+
+      }
+
+    }
+
+
+  }
+
+  catch(error) {
+
+
+    /*
+     * Individual frame failures aren't fatal.
+     *
+     * Keep scanning.
+     */
+
+    console.log(
+      "Frame scan failed:",
       error
     );
 
   }
 
 
-  scanTimer =
-    setTimeout(
-      scanLoop,
-      150
-    );
+  setTimeout(
+    scanLoop,
+    DETECTION_INTERVAL_MS
+  );
 
 }
 
 
 
-function createRotatedFrame() {
-
-  const width =
-    video.videoWidth;
-
-  const height =
-    video.videoHeight;
+/***********************************************************
+ * HANDLE PHYSICAL BARCODE DETECTION
+ ***********************************************************/
 
 
-  canvas90.width =
-    height;
-
-  canvas90.height =
-    width;
-
-
-  const ctx =
-    canvas90.getContext(
-      "2d"
-    );
-
-
-  ctx.save();
-
-
-  ctx.translate(
-    height,
-    0
-  );
-
-
-  ctx.rotate(
-    Math.PI / 2
-  );
-
-
-  ctx.drawImage(
-    video,
-    0,
-    0,
-    width,
-    height
-  );
-
-
-  ctx.restore();
-
-
-  return canvas90;
-
-}
-
-
-
-function handleBarcode(
-  barcode,
-  method
+function handleDetectedBarcode(
+  studentId
 ) {
 
-  const value =
-    String(
-      barcode.rawValue || ""
-    ).trim();
+
+  const now =
+    Date.now();
 
 
-  if (!value) {
-    return;
+  /*
+   * Keep track of the barcode currently visible.
+   */
+
+  if (
+    studentId === lastBarcode
+  ) {
+
+
+    lastBarcodeSeenAt =
+      now;
+
+
+  }
+
+  else {
+
+
+    lastBarcode =
+      studentId;
+
+
+    lastBarcodeSeenAt =
+      now;
+
   }
 
 
+  /*
+   * Ignore scans while processing another card.
+   */
+
   if (
-    value ===
-    lastDetectedValue
+    scannerLocked
   ) {
 
     return;
+
   }
 
 
-  lastDetectedValue =
-    value;
+  /*
+   * Global short cooldown.
+   */
+
+  if (
+    now -
+    lastAcceptedScan <
+    SCAN_COOLDOWN_MS
+  ) {
+
+    return;
+
+  }
+
+
+  lastAcceptedScan =
+    now;
+
+
+  processCheckIn(
+    studentId
+  );
+
+}
+
+
+
+/***********************************************************
+ * PROCESS CHECK-IN
+ ***********************************************************/
+
+
+function processCheckIn(
+  studentId
+) {
+
+
+  if (
+    scannerLocked
+  ) {
+
+    return;
+
+  }
+
+
+  scannerLocked =
+    true;
+
+
+  manualButton.disabled =
+    true;
+
+
+  statusBox.className =
+    "busy";
+
+
+  statusBox.textContent =
+    "Processing...";
 
 
   resultBox.className =
-    "result detected";
+    "";
+
+
+  resultBox.innerHTML =
+    "Checking student ID...";
+
+
+  sendToAppsScript(
+    studentId
+  );
+
+}
+
+
+
+/***********************************************************
+ * SEND REQUEST TO GOOGLE APPS SCRIPT
+ *
+ * Uses JSONP because the scanner is hosted on GitHub Pages.
+ ***********************************************************/
+
+
+function sendToAppsScript(
+  studentId
+) {
+
+
+  const callbackName =
+
+    "munScanner_" +
+
+    Date.now() +
+
+    "_" +
+
+    Math.floor(
+      Math.random() *
+      100000
+    );
+
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+
+  window[
+    callbackName
+  ] =
+    function(data) {
+
+
+      try {
+
+
+        handleServerResult(
+          data
+        );
+
+
+      }
+
+      finally {
+
+
+        delete window[
+          callbackName
+        ];
+
+
+        script.remove();
+
+
+      }
+
+    };
+
+
+
+  const url =
+
+    APPS_SCRIPT_URL +
+
+    "?action=checkin" +
+
+    "&id=" +
+    encodeURIComponent(
+      studentId
+    ) +
+
+    "&callback=" +
+    encodeURIComponent(
+      callbackName
+    ) +
+
+    "&t=" +
+    Date.now();
+
+
+
+  script.src =
+    url;
+
+
+
+  script.onerror =
+    function() {
+
+
+      delete window[
+        callbackName
+      ];
+
+
+      script.remove();
+
+
+      showFailure(
+        "",
+        "Could not connect to attendance system."
+      );
+
+
+      scheduleReset();
+
+    };
+
+
+
+  document.body
+    .appendChild(
+      script
+    );
+
+}
+
+
+
+/***********************************************************
+ * HANDLE GOOGLE RESPONSE
+ ***********************************************************/
+
+
+function handleServerResult(
+  data
+) {
+
+
+  if (
+    data &&
+    data.success
+  ) {
+
+
+    showSuccess(
+      data
+    );
+
+
+    playSuccessSound();
+
+
+  }
+
+  else {
+
+
+    showFailure(
+
+      data &&
+      data.name
+        ? data.name
+        : "",
+
+      data &&
+      data.message
+        ? data.message
+        : "Check-in failed."
+
+    );
+
+
+    playErrorSound();
+
+  }
+
+
+  scheduleReset();
+
+}
+
+
+
+/***********************************************************
+ * SUCCESS DISPLAY
+ ***********************************************************/
+
+
+function showSuccess(
+  data
+) {
+
+
+  const sign =
+    Number(
+      data.points
+    ) >= 0
+      ? "+"
+      : "";
+
+
+  resultBox.className =
+    "success";
 
 
   resultBox.innerHTML =
 
-    "<div class='big'>" +
-    "✓ BARCODE DETECTED" +
+    "<div class='student-name'>" +
+
+      escapeHtml(
+        data.name
+      ) +
+
     "</div>" +
 
-    "<div>" +
-    "<strong>Format:</strong> " +
-    escapeHtml(
-      barcode.format
-    ) +
+
+    "<div class='event-name'>" +
+
+      escapeHtml(
+        data.event
+      ) +
+
     "</div>" +
 
-    "<div>" +
-    "<strong>Method:</strong> " +
-    escapeHtml(
-      method
-    ) +
+
+    "<div class='points'>" +
+
+      sign +
+
+      escapeHtml(
+        String(
+          data.points
+        )
+      ) +
+
+      " points" +
+
     "</div>" +
 
-    "<div class='value'>" +
-    escapeHtml(
-      value
-    ) +
+
+    "<div class='timestamp'>" +
+
+      escapeHtml(
+        data.timestamp
+      ) +
+
     "</div>";
 
 
+  statusBox.className =
+    "ready";
+
+
   statusBox.textContent =
-    "✅ Barcode successfully decoded";
+    "✓ CHECK-IN COMPLETE";
+
+}
 
 
-  log(
-    "SUCCESS"
-  );
+
+/***********************************************************
+ * FAILURE DISPLAY
+ ***********************************************************/
 
 
-  log(
-    "Format: " +
-    barcode.format
-  );
+function showFailure(
+  name,
+  message
+) {
 
 
-  log(
-    "Value: " +
-    value
-  );
+  resultBox.className =
+    "error";
 
 
-  log(
-    "Detected using: " +
-    method
+  let html =
+    "";
+
+
+  if (name) {
+
+
+    html +=
+
+      "<div class='error-name'>" +
+
+        escapeHtml(
+          name
+        ) +
+
+      "</div>";
+
+  }
+
+
+  html +=
+
+    "<div class='error-title'>" +
+
+      escapeHtml(
+        message
+      ) +
+
+    "</div>";
+
+
+  resultBox.innerHTML =
+    html;
+
+
+  statusBox.className =
+    "busy";
+
+
+  statusBox.textContent =
+    "CHECK-IN NOT RECORDED";
+
+}
+
+
+
+/***********************************************************
+ * RESET SCANNER
+ ***********************************************************/
+
+
+function scheduleReset() {
+
+
+  setTimeout(
+    function() {
+
+
+      resultBox.className =
+        "";
+
+
+      resultBox.innerHTML =
+        "Ready for next student.";
+
+
+      manualId.value =
+        "";
+
+
+      manualButton.disabled =
+        false;
+
+
+      scannerLocked =
+        false;
+
+
+      showReady();
+
+
+    },
+
+    RESULT_DISPLAY_MS
+
   );
 
 }
 
+
+
+/***********************************************************
+ * READY STATE
+ ***********************************************************/
+
+
+function showReady() {
+
+
+  statusBox.className =
+    "ready";
+
+
+  statusBox.textContent =
+    "● READY TO SCAN";
+
+}
+
+
+
+/***********************************************************
+ * SCANNER ERROR
+ ***********************************************************/
+
+
+function scannerError(
+  message
+) {
+
+
+  statusBox.className =
+    "busy";
+
+
+  statusBox.textContent =
+    "Scanner unavailable";
+
+
+  resultBox.className =
+    "error";
+
+
+  resultBox.innerHTML =
+
+    "<div class='error-title'>" +
+
+      escapeHtml(
+        message
+      ) +
+
+    "</div>";
+
+}
+
+
+
+/***********************************************************
+ * MANUAL STUDENT ID
+ ***********************************************************/
+
+
+manualButton
+  .addEventListener(
+    "click",
+    function() {
+
+
+      const id =
+        manualId.value.trim();
+
+
+      if (!id) {
+
+
+        showFailure(
+          "",
+          "Enter a Student ID."
+        );
+
+
+        return;
+
+      }
+
+
+      processCheckIn(
+        id
+      );
+
+    }
+  );
+
+
+
+manualId
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+
+      if (
+        event.key ===
+        "Enter"
+      ) {
+
+
+        event.preventDefault();
+
+
+        manualButton.click();
+
+      }
+
+    }
+  );
+
+
+
+/***********************************************************
+ * SUCCESS SOUND
+ ***********************************************************/
+
+
+function playSuccessSound() {
+
+
+  playToneSequence([
+    {
+      frequency:
+        660,
+      duration:
+        90
+    },
+    {
+      frequency:
+        880,
+      duration:
+        140
+    }
+  ]);
+
+}
+
+
+
+/***********************************************************
+ * ERROR SOUND
+ ***********************************************************/
+
+
+function playErrorSound() {
+
+
+  playToneSequence([
+    {
+      frequency:
+        300,
+      duration:
+        180
+    },
+    {
+      frequency:
+        220,
+      duration:
+        180
+    }
+  ]);
+
+}
+
+
+
+/***********************************************************
+ * SOUND ENGINE
+ ***********************************************************/
+
+
+function playToneSequence(
+  tones
+) {
+
+
+  try {
+
+
+    const AudioContextClass =
+
+      window.AudioContext ||
+
+      window.webkitAudioContext;
+
+
+    if (
+      !AudioContextClass
+    ) {
+
+      return;
+
+    }
+
+
+    const context =
+      new AudioContextClass();
+
+
+    let startTime =
+      context.currentTime;
+
+
+    tones.forEach(
+      function(tone) {
+
+
+        const oscillator =
+          context.createOscillator();
+
+
+        const gain =
+          context.createGain();
+
+
+        oscillator.type =
+          "sine";
+
+
+        oscillator.frequency.value =
+          tone.frequency;
+
+
+        oscillator.connect(
+          gain
+        );
+
+
+        gain.connect(
+          context.destination
+        );
+
+
+        gain.gain.setValueAtTime(
+          0.08,
+          startTime
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          startTime +
+          tone.duration /
+          1000
+        );
+
+
+        oscillator.start(
+          startTime
+        );
+
+
+        oscillator.stop(
+          startTime +
+          tone.duration /
+          1000
+        );
+
+
+        startTime +=
+          tone.duration /
+          1000 +
+          0.04;
+
+      }
+    );
+
+
+    setTimeout(
+      function() {
+
+        context.close();
+
+      },
+      1000
+    );
+
+
+  }
+
+  catch(error) {
+
+
+    /*
+     * Sound is optional.
+     */
+
+    console.log(
+      "Audio unavailable."
+    );
+
+  }
+
+}
+
+
+
+/***********************************************************
+ * HTML SAFETY
+ ***********************************************************/
 
 
 function escapeHtml(
   value
 ) {
+
 
   return String(
     value
@@ -1108,34 +1971,16 @@ function escapeHtml(
 
 
 
-startButton
-  .addEventListener(
-    "click",
-    startCamera
-  );
+/***********************************************************
+ * START SYSTEM
+ ***********************************************************/
 
 
-stopButton
-  .addEventListener(
-    "click",
-    function() {
+initializeScanner();
 
-      stopCamera();
-
-      statusBox.textContent =
-        "Scanner stopped.";
-
-      log(
-        "Scanner stopped."
-      );
-
-    }
-  );
-
-
-initialize();
 
 </script>
+
 
 </body>
 
