@@ -183,7 +183,7 @@ Do not intentionally change:
 into:
 
 ```text
-620829
+743165
 ```
 
 The backend is designed to preserve the seven-digit Student ID.
@@ -852,7 +852,7 @@ Correct:
 Incorrect:
 
 ```text
-620829
+743165
 ```
 
 Student ID columns should be treated as text.
@@ -1191,13 +1191,3 @@ Run these tests:
 - [ ] Personal browser autofill information is not available on the kiosk
 
 Do not deploy the system for a real meeting until these tests pass.
-
----
-
-# Project
-
-Model UN Check-In & Points System
-
-Repository:
-
-https://github.com/Aspect02/mun-checkin
