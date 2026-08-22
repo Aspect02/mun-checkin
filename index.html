@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model UN Check-In</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #071a33;
+      color: white;
+      padding: 24px;
+    }
+    .container { max-width: 980px; margin: auto; text-align: center; }
+    .top-header { position: relative; min-height: 72px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .un-logo { position: absolute; right: 0; top: 0; width: 66px; height: 66px; opacity: .92; }
+    .un-logo svg { width: 100%; height: 100%; display: block; }
+    .club-label { letter-spacing: 4px; opacity: .65; font-size: 15px; margin-bottom: 7px; }
+    h1 { margin: 0 0 10px; font-size: 42px; }
+    #eventBanner {
+      margin: 0 0 18px;
+      padding: 13px 16px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      text-align: left;
+    }
+    .event-banner-main { min-width: 0; }
+    #activeEventName { font-size: 18px; font-weight: bold; }
+    #activeEventInfo { margin-top: 4px; opacity: .65; font-size: 13px; }
+    .health { display: flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 12px; }
+    #backendDot { width: 9px; height: 9px; border-radius: 50%; background: #ffd166; }
+    #backendDot.online { background: #70e89e; }
+    #backendDot.offline { background: #ff7474; }
+    #status { margin-bottom: 20px; font-size: 18px; font-weight: bold; }
+    .ready { color: #70e89e; }
+    .busy { color: #ffd166; }
+    .camera-box {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      background: black;
+      border: 2px solid rgba(255,255,255,.25);
+    }
+    video { width: 100%; display: block; max-height: 520px; object-fit: cover; }
+    .scan-guide {
+      position: absolute;
+      top: 8%; bottom: 8%; left: 37%; right: 37%;
+      border: 3px solid white;
+      border-radius: 12px;
+      pointer-events: none;
+    }
+    .scan-line {
+      position: absolute;
+      top: 12%; bottom: 12%; left: 50%; width: 3px;
+      background: #ff5252;
+      box-shadow: 0 0 10px rgba(255,82,82,.8);
+      pointer-events: none;
+    }
+    .instruction { margin-top: 15px; font-size: 18px; opacity: .85; }
+    .controls { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    #soundButton, #retryButton {
+      padding: 7px 12px;
+      font-size: 12px;
+      background: rgba(255,255,255,.1);
+      color: white;
+    }
+    #result {
+      margin-top: 22px;
+      min-height: 135px;
+      padding: 22px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .success { background: rgba(38,180,90,.22) !important; }
+    .error { background: rgba(220,55,55,.22) !important; }
+    .student-name { font-size: 34px; font-weight: bold; margin-bottom: 7px; }
+    .event-name { font-size: 20px; margin-bottom: 7px; }
+    .points { font-size: 36px; font-weight: bold; color: #70e89e; }
+    .timestamp { margin-top: 8px; opacity: .7; font-size: 15px; }
+    .member-meta { margin-top: 8px; font-size: 14px; font-weight: 700; opacity: .82; letter-spacing: .15px; }
+    .error-title { font-size: 27px; font-weight: bold; color: #ff9999; }
+    .error-name { font-size: 21px; font-weight: bold; margin-bottom: 8px; }
+    #registrationPanel {
+      display: none;
+      margin-top: 22px;
+      padding: 24px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.10);
+      text-align: left;
+    }
+    .form-group { margin-top: 15px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 6px; }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .registration-actions, .manual-row { display: flex; gap: 10px; margin-top: 18px; }
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: white;
+      color: #071a33;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+    .secondary-button { background: rgba(255,255,255,.15); color: white; }
+    .manual-section {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,.16);
+    }
+    .manual-label { font-size: 14px; opacity: .6; margin-bottom: 9px; }
+    .manual-row input { flex: 1; }
+    .recent-panel {
+      margin-top: 26px;
+      padding: 18px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+      text-align: left;
+    }
+    .recent-title { font-weight: bold; letter-spacing: 1px; font-size: 13px; margin-bottom: 11px; opacity: .75; }
+    #recentList { display: flex; flex-direction: column; gap: 7px; }
+    .recent-empty { opacity: .45; font-size: 13px; }
+    .recent-row {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      align-items: center;
+    }
+    .recent-time { opacity: .5; font-size: 12px; }
+    .recent-name { font-weight: bold; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .recent-result { font-size: 12px; opacity: .75; text-align: right; }
+    .small-status { margin-top: 12px; font-size: 12px; opacity: .4; }
+    /* Balanced fullscreen layout: compact enough to fit, but still spacious. */
+    @media (min-width: 700px) and (max-height: 920px) {
+      body { padding: 14px 20px; }
+      .container { max-width: 1050px; }
+      .top-header { min-height: 58px; }
+      .un-logo { width: 54px; height: 54px; }
+      .club-label { font-size: 13px; margin-bottom: 4px; }
+      h1 { font-size: 34px; margin-bottom: 7px; }
+      #eventBanner { margin-bottom: 10px; padding: 10px 14px; }
+      #activeEventName { font-size: 16px; }
+      #activeEventInfo { font-size: 12px; }
+      #status { margin-bottom: 9px; font-size: 15px; }
+      video { height: clamp(285px, 43vh, 390px); max-height: none; }
+      .instruction { margin-top: 8px; font-size: 15px; }
+      .controls { margin-top: 6px; }
+      #soundButton, #retryButton { padding: 6px 10px; font-size: 12px; }
+      #result { margin-top: 10px; min-height: 92px; padding: 12px 16px; }
+      .student-name { font-size: 27px; margin-bottom: 3px; }
+      .event-name { font-size: 17px; margin-bottom: 3px; }
+      .points { font-size: 29px; }
+      .timestamp { margin-top: 3px; font-size: 12px; }
+      .manual-section { margin-top: 10px; padding-top: 9px; }
+      .manual-label { margin-bottom: 5px; font-size: 12px; }
+      .manual-row { margin-top: 0; }
+      input, select { padding: 9px 10px; font-size: 14px; }
+      button { padding: 9px 13px; font-size: 14px; }
+      .recent-panel { margin-top: 10px; padding: 10px 14px; }
+      .recent-title { margin-bottom: 5px; font-size: 11px; }
+      #recentList { gap: 2px; max-height: 100px; overflow-y: auto; }
+      .recent-row { grid-template-columns: 72px 1fr auto; gap: 10px; padding: 4px 0; }
+      .recent-time, .recent-result { font-size: 11px; }
+      .recent-name { font-size: 13px; }
+      .small-status { margin-top: 5px; font-size: 10px; }
+    }
+
+    /* Only tighten a little more on genuinely short displays. */
+    @media (min-width: 700px) and (max-height: 760px) {
+      body { padding: 9px 16px; }
+      .top-header { min-height: 50px; }
+      .un-logo { width: 46px; height: 46px; }
+      .club-label { font-size: 11px; margin-bottom: 2px; }
+      h1 { font-size: 29px; margin-bottom: 4px; }
+      #eventBanner { margin-bottom: 6px; padding: 8px 12px; }
+      #status { margin-bottom: 6px; font-size: 13px; }
+      video { height: clamp(230px, 39vh, 310px); }
+      .instruction { margin-top: 5px; font-size: 13px; }
+      #result { min-height: 76px; margin-top: 6px; padding: 8px 12px; }
+      .student-name { font-size: 23px; }
+      .event-name { font-size: 15px; }
+      .points { font-size: 25px; }
+      .manual-section { margin-top: 6px; padding-top: 6px; }
+      .recent-panel { margin-top: 6px; padding: 7px 11px; }
+      #recentList { max-height: 76px; }
+      .recent-row { padding: 2px 0; }
+      .small-status { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      h1 { font-size: 32px; }
+      .top-header { min-height: 64px; padding-right: 52px; }
+      .un-logo { width: 48px; height: 48px; }
+      .scan-guide { left: 33%; right: 33%; }
+      .manual-row, .registration-actions { flex-direction: column; }
+      #eventBanner { align-items: flex-start; flex-direction: column; }
+      .recent-row { grid-template-columns: 65px 1fr; }
+      .recent-result { grid-column: 2; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-header">
+    <div class="club-label">MODEL UNITED NATIONS</div>
+    <h1>Check-In</h1>
+    <div class="un-logo" aria-label="United Nations emblem" title="United Nations">
+      <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
+        <circle cx="50" cy="50" r="47" fill="#009edb"/>
+        <circle cx="50" cy="45" r="25" fill="none" stroke="white" stroke-width="2.5"/>
+        <ellipse cx="50" cy="45" rx="12" ry="25" fill="none" stroke="white" stroke-width="2"/>
+        <path d="M25 45h50M29 34h42M29 56h42M50 20v50" fill="none" stroke="white" stroke-width="2"/>
+        <path d="M18 68C9 57 8 42 15 30M82 68c9-11 10-26 3-38" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        <path d="M18 68c8 11 19 17 32 20M82 68c-8 11-19 17-32 20" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        <path d="M16 62l-8-2M19 70l-7 3M24 77l-5 6M84 62l8-2M81 70l7 3M76 77l5 6" stroke="white" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="eventBanner">
+    <div class="event-banner-main">
+      <div id="activeEventName">Checking active event...</div>
+      <div id="activeEventInfo">Connecting to attendance system</div>
+    </div>
+    <div class="health">
+      <span id="backendDot"></span>
+      <span id="backendText">Backend</span>
+    </div>
+  </div>
+
+  <div id="status" class="busy">Starting camera...</div>
+
+  <div class="camera-box">
+    <video id="video" autoplay muted playsinline></video>
+    <div class="scan-guide"></div>
+    <div class="scan-line"></div>
+  </div>
+
+  <div class="instruction">Hold your student ID barcode inside the box.</div>
+
+  <div class="controls">
+    <button id="soundButton" type="button">🔊 Sound On</button>
+    <button id="retryButton" type="button">↻ Refresh Status</button>
+  </div>
+
+  <div id="result">Initializing scanner...</div>
+
+  <div id="registrationPanel" autocomplete="off">
+    <h2>New Member Registration</h2>
+    <p>This Student ID is not currently registered. If you are joining Model UN, enter your information below.</p>
+    <div class="form-group">
+      <label for="newMemberName">Full Name</label>
+      <input id="newMemberName" name="mun_member_label" type="text" placeholder="First and last name" autocomplete="new-password" autocapitalize="words" spellcheck="false" readonly>
+    </div>
+    <div class="form-group">
+      <label for="newMemberEmail">Email</label>
+      <input id="newMemberEmail" name="mun_school_contact" type="text" placeholder="Personal or School Email" autocomplete="new-password" autocapitalize="none" spellcheck="false" inputmode="email" readonly>
+        <button id="emailSuggestion" type="button" style="display:none;margin-top:8px;width:100%;text-align:left;background:rgba(255,255,255,.12);color:white;font-size:14px;padding:10px 12px;">
+          Use <span id="emailSuggestionText"></span>
+        </button>
+    </div>
+    <div class="form-group">
+      <label for="newMemberGrade">Grade</label>
+      <select id="newMemberGrade">
+        <option value="">Select grade</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+      </select>
+    </div>
+    <div class="registration-actions">
+      <button id="registerButton" type="button">Register & Check In</button>
+      <button id="cancelRegistration" class="secondary-button" type="button">Cancel</button>
+    </div>
+  </div>
+
+  <div class="manual-section">
+    <div class="manual-label">ID not scanning? Enter the Student ID manually.</div>
+    <div class="manual-row">
+      <input id="manualId" type="text" placeholder="Student ID" autocomplete="off">
+      <button id="manualButton" type="button">Check In</button>
+    </div>
+  </div>
+
+  <div class="recent-panel">
+    <div class="recent-title">CHECKED IN THIS SESSION</div>
+    <div id="recentList"><div class="recent-empty">No successful check-ins yet.</div></div>
+  </div>
+
+  <div class="small-status">Code 39 • Model UN Attendance System • Localhost</div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwLRFPpqwTbtcsS5Zw0nzl_Y3WYrUbXvGX3Ar4zLI3NVjbJYZV17JAUGZTZCP1rQJRyg/exec";
+
+
+// Student IDs are stored as seven digits.
+const STUDENT_ID_LENGTH = 7;
+
+function canonicalStudentId(value) {
+  let id = String(value == null ? "" : value).trim();
+
+  if (id.startsWith("*") && id.endsWith("*") && id.length > 2) {
+    id = id.slice(1, -1);
+  }
+
+  // Some Code 39 scans arrive as 6 digits even though the
+  // school-facing Student ID is represented as 7 digits.
+  if (/^\d{6}$/.test(id)) {
+    id = "0" + id;
+  }
+
+  if (!/^\d{7}$/.test(id)) {
+    return "";
+  }
+
+  return id;
+}
+
+const RESULT_DISPLAY_MS = 2600;
+const SCAN_COOLDOWN_MS = 1200;
+const CARD_REMOVED_MS = 450;
+const STATUS_REFRESH_MS = 30000;
+const DETECTION_INTERVAL_MS = 75;
+
+const video = document.getElementById("video");
+const statusBox = document.getElementById("status");
+const resultBox = document.getElementById("result");
+const registrationPanel = document.getElementById("registrationPanel");
+const newMemberName = document.getElementById("newMemberName");
+const newMemberEmail = document.getElementById("newMemberEmail");
+const emailSuggestion = document.getElementById("emailSuggestion");
+const emailSuggestionText = document.getElementById("emailSuggestionText");
+const newMemberGrade = document.getElementById("newMemberGrade");
+const registerButton = document.getElementById("registerButton");
+const cancelRegistration = document.getElementById("cancelRegistration");
+const manualId = document.getElementById("manualId");
+const manualButton = document.getElementById("manualButton");
+const activeEventName = document.getElementById("activeEventName");
+const activeEventInfo = document.getElementById("activeEventInfo");
+const backendDot = document.getElementById("backendDot");
+const backendText = document.getElementById("backendText");
+const recentList = document.getElementById("recentList");
+const soundButton = document.getElementById("soundButton");
+const retryButton = document.getElementById("retryButton");
+
+function makeKioskField(field) {
+  // Chrome can ignore autocomplete="off" for profile/address autofill.
+  // Keeping the field readonly until the user deliberately interacts with it
+  // prevents the profile suggestion popup from appearing on page load/focus.
+  const unlock = function() {
+    field.removeAttribute("readonly");
+  };
+
+  field.addEventListener("pointerdown", unlock, { once: true });
+  field.addEventListener("keydown", unlock, { once: true });
+  field.addEventListener("touchstart", unlock, { once: true, passive: true });
+}
+
+makeKioskField(newMemberName);
+makeKioskField(newMemberEmail);
+
+
+let detector = null;
+let stream = null;
+let scanning = false;
+let detectorBusy = false;
+let scannerLocked = false;
+let lastAcceptedScan = 0;
+let pendingStudentId = null;
+let soundEnabled = true;
+let recentScans = [];
+let lastBarcodeSeenAt = 0;
+let blockedPhysicalBarcode = "";
+let lastDetectionAt = 0;
+
+async function initializeScanner() {
+  refreshSystemStatus();
+  setInterval(refreshSystemStatus, STATUS_REFRESH_MS);
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    scannerError("Camera access is unavailable.");
+    return;
+  }
+
+  if (!("BarcodeDetector" in window)) {
+    scannerError("Barcode scanning is not supported by this browser.");
+    return;
+  }
+
+  try {
+    const formats = await BarcodeDetector.getSupportedFormats();
+    if (!formats.includes("code_39")) {
+      scannerError("Code 39 barcode scanning is unavailable.");
+      return;
+    }
+    detector = new BarcodeDetector({ formats: ["code_39"] });
+    await startCamera();
+  } catch (error) {
+    console.error(error);
+    scannerError("Could not initialize scanner.");
+  }
+}
+
+async function startCamera() {
+  try {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 30 },
+          facingMode: { ideal: "environment" }
+        }
+      });
+    } catch (highResolutionError) {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      });
+    }
+
+    video.srcObject = stream;
+    await video.play();
+
+    const track = stream.getVideoTracks()[0];
+    if (track && track.getCapabilities) {
+      const capabilities = track.getCapabilities();
+      if (capabilities.focusMode && capabilities.focusMode.includes("continuous")) {
+        try {
+          await track.applyConstraints({ advanced: [{ focusMode: "continuous" }] });
+        } catch (error) {
+          console.log("Continuous autofocus unavailable.");
+        }
+      }
+    }
+
+    scanning = true;
+    showReady();
+    requestAnimationFrame(scanLoop);
+  } catch (error) {
+    console.error(error);
+    scannerError("Could not access camera. Check browser camera permission.");
+  }
+}
+
+async function scanLoop(frameTime) {
+  if (!scanning) return;
+
+  // Do not run BarcodeDetector on every animation frame.
+  // ~13 detections/sec is fast for an ID card while using much less CPU.
+  if (frameTime - lastDetectionAt < DETECTION_INTERVAL_MS) {
+    requestAnimationFrame(scanLoop);
+    return;
+  }
+
+  if (detectorBusy) {
+    requestAnimationFrame(scanLoop);
+    return;
+  }
+
+  lastDetectionAt = frameTime;
+  detectorBusy = true;
+
+  try {
+    if (!scannerLocked && video.readyState >= 2 && video.videoWidth > 0) {
+      const results = await detector.detect(video);
+
+      if (results.length > 0) {
+        const id = canonicalStudentId(results[0].rawValue);
+
+        if (id) {
+          lastBarcodeSeenAt = performance.now();
+
+          if (id !== blockedPhysicalBarcode) {
+            barcodeDetected(id);
+          }
+        }
+      } else {
+        checkCardRemoval();
+      }
+    } else {
+      checkCardRemoval();
+    }
+  } catch (error) {
+    console.log("Frame scan error:", error);
+  } finally {
+    detectorBusy = false;
+    requestAnimationFrame(scanLoop);
+  }
+}
+
+function checkCardRemoval() {
+  if (!blockedPhysicalBarcode) return;
+  if (performance.now() - lastBarcodeSeenAt >= CARD_REMOVED_MS) {
+    blockedPhysicalBarcode = "";
+  }
+}
+
+function barcodeDetected(studentId) {
+  studentId = canonicalStudentId(studentId);
+  if (!studentId) return;
+
+  const now = Date.now();
+  if (scannerLocked) return;
+  if (now - lastAcceptedScan < SCAN_COOLDOWN_MS) return;
+
+  lastAcceptedScan = now;
+  blockedPhysicalBarcode = studentId;
+  startCheckIn(studentId);
+}
+
+function startCheckIn(studentId) {
+  studentId = canonicalStudentId(studentId);
+  if (!studentId || scannerLocked) return;
+
+  scannerLocked = true;
+  manualButton.disabled = true;
+  statusBox.className = "busy";
+  statusBox.textContent = "Processing...";
+  resultBox.className = "";
+  resultBox.textContent = "Checking Student ID...";
+
+  jsonpRequest(
+    { action: "checkin", id: studentId },
+    function(data) {
+      setBackendOnline();
+      handleCheckInResponse(data, studentId);
+    },
+    function() {
+      setBackendOffline();
+      showFailure("", "Could not connect to attendance system.");
+      errorSound();
+      scheduleReset();
+    }
+  );
+}
+
+function handleCheckInResponse(data, studentId) {
+  if (data && data.success) {
+    showSuccess(data, false);
+
+    const historyKey =
+      (data.studentId || studentId) + "|" +
+      (data.event || activeEventName.textContent);
+
+    addRecentScan(
+      historyKey,
+      data.name,
+      formatMemberSummary(data) || "Checked in",
+      true
+    );
+
+    // Fetch grade + total points AFTER the check-in has already succeeded.
+    // This keeps the audible/visual check-in response fast.
+    if (
+      data.grade === undefined ||
+      data.grade === null ||
+      data.totalPoints === undefined ||
+      data.totalPoints === null
+    ) {
+      enrichMemberStatus(data.studentId || studentId, historyKey, data);
+    }
+
+    successSound();
+    scheduleReset();
+    return;
+  }
+
+  if (data && data.code === "STUDENT_NOT_FOUND") {
+    pendingStudentId = studentId;
+    openRegistration();
+    newMemberSound();
+    return;
+  }
+
+  if (data && data.code === "ALREADY_CHECKED_IN") {
+    showFailure(data.name || "", "Already checked in.");
+    alreadyCheckedSound();
+    scheduleReset();
+    return;
+  }
+
+  showFailure(data && data.name ? data.name : "", data && data.message ? data.message : "Check-in failed.");
+  errorSound();
+  scheduleReset();
+}
+
+function openRegistration() {
+  resultBox.className = "error";
+  resultBox.innerHTML = "<div class='error-title'>Student not found</div><div style='margin-top:8px;'>Are you a new Model UN member?</div>";
+  registrationPanel.style.display = "block";
+  statusBox.className = "busy";
+  statusBox.textContent = "NEW MEMBER";
+  manualButton.disabled = true;
+
+  // Wait one frame so the panel has rendered, then center it smoothly.
+  requestAnimationFrame(function() {
+    setTimeout(function() {
+      registrationPanel.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      // Focus the first field without causing a second browser scroll.
+      try {
+        newMemberName.removeAttribute("readonly");
+        newMemberName.focus({ preventScroll: true });
+      } catch (error) {
+        newMemberName.removeAttribute("readonly");
+        newMemberName.focus();
+      }
+    }, 80);
+  });
+}
+
+
+function normalizeSchoolEmailInput(value) {
+  const raw = String(value == null ? "" : value).trim().toLowerCase();
+
+  // If they type only a numeric Student ID, build the MDCPS student email.
+  if (/^\d{7}$/.test(raw)) {
+    const id = canonicalStudentId(raw);
+    return id ? id + "@students.dadeschools.net" : "";
+  }
+
+  return raw;
+}
+
+function updateEmailSuggestion() {
+  const raw = newMemberEmail.value.trim().toLowerCase();
+
+  if (/^\d{7}$/.test(raw)) {
+    const id = canonicalStudentId(raw);
+
+    if (id) {
+      const suggestion = id + "@students.dadeschools.net";
+      emailSuggestionText.textContent = suggestion;
+      emailSuggestion.dataset.email = suggestion;
+      emailSuggestion.style.display = "block";
+      return;
+    }
+  }
+
+  emailSuggestion.dataset.email = "";
+  emailSuggestion.style.display = "none";
+}
+
+newMemberEmail.addEventListener("input", updateEmailSuggestion);
+
+emailSuggestion.addEventListener("click", function() {
+  const suggestion = emailSuggestion.dataset.email || "";
+
+  if (!suggestion) return;
+
+  newMemberEmail.removeAttribute("readonly");
+  newMemberEmail.value = suggestion;
+  emailSuggestion.style.display = "none";
+  newMemberEmail.focus({ preventScroll: true });
+});
+
+registerButton.addEventListener("click", function() {
+  const name = newMemberName.value.trim();
+  const email = normalizeSchoolEmailInput(newMemberEmail.value);
+  const grade = newMemberGrade.value;
+
+  if (!name) return alert("Please enter your full name.");
+  if (!email) return alert("Please enter your school email.");
+  if (!grade) return alert("Please select your grade.");
+  if (!pendingStudentId) {
+    alert("Student ID was lost. Please scan your card again.");
+    resetScanner();
+    return;
+  }
+
+  registerButton.disabled = true;
+  cancelRegistration.disabled = true;
+  statusBox.className = "busy";
+  statusBox.textContent = "Registering...";
+
+  jsonpRequest(
+    { action: "register", id: canonicalStudentId(pendingStudentId), name, email, grade },
+    function(data) {
+      setBackendOnline();
+      handleRegistrationResponse(data);
+    },
+    function() {
+      setBackendOffline();
+      alert("Could not connect to registration system.");
+      registerButton.disabled = false;
+      cancelRegistration.disabled = false;
+    }
+  );
+});
+
+function handleRegistrationResponse(data) {
+  if (data && data.success) {
+    // For a brand-new registration, we already know the grade from the form.
+    // A truly new member's current total is the points just awarded at registration.
+    if (!data.grade) data.grade = newMemberGrade.value;
+    if (data.registered === true && (data.totalPoints === undefined || data.totalPoints === null)) {
+      data.totalPoints = Number(data.points) || 0;
+    }
+
+    registrationPanel.style.display = "none";
+    showSuccess(data, data.registered === true);
+    const historyKey =
+      (data.studentId || pendingStudentId || data.name) + "|" +
+      (data.event || activeEventName.textContent);
+
+    addRecentScan(
+      historyKey,
+      data.name,
+      formatMemberSummary(data) || "Checked in",
+      true
+    );
+
+    // For brand-new members, grade and current total are known immediately.
+    // For an already-existing member who reached this path, enrich from backend.
+    if (data.registered !== true) {
+      enrichMemberStatus(data.studentId || pendingStudentId, historyKey, data);
+    }
+
+    successSound();
+    clearRegistration();
+    scheduleReset();
+    return;
+  }
+
+  if (data && data.code === "ALREADY_CHECKED_IN") {
+    registrationPanel.style.display = "none";
+    showFailure(data.name || "", "Already checked in.");
+    alreadyCheckedSound();
+    clearRegistration();
+    scheduleReset();
+    return;
+  }
+
+  alert(data && data.message ? data.message : "Registration failed.");
+  registerButton.disabled = false;
+  cancelRegistration.disabled = false;
+}
+
+cancelRegistration.addEventListener("click", function() {
+  cancelNewMemberRegistration();
+});
+
+function cancelNewMemberRegistration() {
+  registrationPanel.style.display = "none";
+  clearRegistration();
+
+  resultBox.className = "";
+  resultBox.textContent = "Registration cancelled. Ready for next student.";
+  manualId.value = "";
+  manualButton.disabled = false;
+  scannerLocked = false;
+  showReady();
+
+  // Return the operator to the scanner after cancelling.
+  setTimeout(scrollToScanner, 60);
+}
+
+function scrollToScanner() {
+  const cameraBox = document.querySelector(".camera-box");
+  if (!cameraBox) return;
+
+  cameraBox.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
+
+// Escape is a quick cancel shortcut while the registration form is open.
+document.addEventListener("keydown", function(event) {
+  if (
+    event.key === "Escape" &&
+    registrationPanel.style.display === "block" &&
+    !registerButton.disabled
+  ) {
+    event.preventDefault();
+    cancelNewMemberRegistration();
+  }
+});
+
+function clearRegistration() {
+  newMemberName.value = "";
+  newMemberName.setAttribute("readonly", "");
+  newMemberEmail.value = "";
+  newMemberEmail.setAttribute("readonly", "");
+  emailSuggestion.dataset.email = "";
+  emailSuggestion.style.display = "none";
+  newMemberGrade.value = "";
+  pendingStudentId = null;
+  registerButton.disabled = false;
+  cancelRegistration.disabled = false;
+}
+
+manualButton.addEventListener("click", function() {
+  const raw = manualId.value.trim();
+
+  if (!/^\d{7}$/.test(raw)) {
+    showFailure("", "Student ID must be exactly 7 digits.");
+    errorSound();
+    return;
+  }
+
+  const id = canonicalStudentId(raw);
+
+  if (!id) {
+    showFailure("", "Invalid Student ID.");
+    errorSound();
+    return;
+  }
+
+  manualId.value = id;
+  startCheckIn(id);
+});
+
+manualId.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    manualButton.click();
+  }
+});
+
+function showSuccess(data, newMember) {
+  const sign = Number(data.points) >= 0 ? "+" : "";
+  const heading = newMember
+    ? "<div style='font-size:14px;letter-spacing:2px;margin-bottom:8px;opacity:.8;'>WELCOME TO MODEL UN</div>"
+    : "";
+
+  const memberSummary = formatMemberSummary(data);
+
+  resultBox.className = "success";
+  resultBox.innerHTML =
+    heading +
+    "<div class='student-name'>" + escapeHtml(data.name) + "</div>" +
+    "<div class='event-name'>" + escapeHtml(data.event) + "</div>" +
+    "<div class='points'>" + sign + escapeHtml(String(data.points)) + " points</div>" +
+    (memberSummary ? "<div class='member-meta'>" + escapeHtml(memberSummary) + "</div>" : "") +
+    "<div class='timestamp'>" + escapeHtml(data.timestamp) + "</div>";
+
+  statusBox.className = "ready";
+  statusBox.textContent = newMember ? "✓ REGISTERED & CHECKED IN" : "✓ CHECK-IN COMPLETE";
+}
+
+function formatMemberSummary(data) {
+  if (!data) return "";
+
+  const parts = [];
+
+  if (data.grade !== undefined && data.grade !== null && String(data.grade).trim() !== "") {
+    parts.push("Grade " + String(data.grade).trim());
+  }
+
+  if (data.totalPoints !== undefined && data.totalPoints !== null && data.totalPoints !== "") {
+    const total = Number(data.totalPoints);
+    if (Number.isFinite(total)) {
+      parts.push(total + (total === 1 ? " total point" : " total pts"));
+    }
+  }
+
+  return parts.join(" • ");
+}
+
+function showFailure(name, message) {
+  let html = "";
+  if (name) html += "<div class='error-name'>" + escapeHtml(name) + "</div>";
+  html += "<div class='error-title'>" + escapeHtml(message) + "</div>";
+  resultBox.className = "error";
+  resultBox.innerHTML = html;
+  statusBox.className = "busy";
+  statusBox.textContent = "CHECK-IN NOT RECORDED";
+}
+
+function addRecentScan(key, name, result, success) {
+  // One recent-history row per student per event. If a card is repeatedly
+  // scanned, keep the original history entry instead of filling the panel
+  // with duplicate "Already checked in" rows.
+  const historyKey = String(key || name || "Unknown").trim().toUpperCase();
+
+  if (recentScans.some(function(item) { return item.key === historyKey; })) {
+    return;
+  }
+
+  recentScans.unshift({
+    key: historyKey,
+    time: new Date(),
+    name: name || "Unknown",
+    result: result,
+    success: success
+  });
+
+  recentScans = recentScans.slice(0, 8);
+  renderRecentScans();
+}
+
+function renderRecentScans() {
+  if (recentScans.length === 0) {
+    recentList.innerHTML = "<div class='recent-empty'>No successful check-ins yet.</div>";
+    return;
+  }
+
+  recentList.innerHTML = recentScans.map(function(item) {
+    const time = item.time.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" });
+    return "<div class='recent-row'>" +
+      "<div class='recent-time'>" + escapeHtml(time) + "</div>" +
+      "<div class='recent-name'>" + escapeHtml(item.name) + "</div>" +
+      "<div class='recent-result'>" + escapeHtml(item.result) + "</div>" +
+      "</div>";
+  }).join("");
+}
+
+function enrichMemberStatus(studentId, historyKey, originalData) {
+  if (!studentId) return;
+
+  jsonpRequest(
+    { action: "memberstatus", id: studentId },
+    function(info) {
+      if (!info || !info.success) return;
+
+      originalData.grade = info.grade;
+      originalData.totalPoints = info.totalPoints;
+
+      const summary = formatMemberSummary(originalData);
+      if (!summary) return;
+
+      updateRecentScan(historyKey, summary);
+      updateVisibleSuccessMeta(summary);
+    },
+    function() {
+      // Member enrichment is optional. A failure should never affect check-in.
+    }
+  );
+}
+
+function updateRecentScan(key, result) {
+  const historyKey = String(key || "").trim().toUpperCase();
+  const item = recentScans.find(function(entry) {
+    return entry.key === historyKey;
+  });
+
+  if (!item) return;
+
+  item.result = result;
+  renderRecentScans();
+}
+
+function updateVisibleSuccessMeta(summary) {
+  if (!summary || !resultBox.classList.contains("success")) return;
+
+  let meta = resultBox.querySelector(".member-meta");
+
+  if (!meta) {
+    meta = document.createElement("div");
+    meta.className = "member-meta";
+
+    const timestamp = resultBox.querySelector(".timestamp");
+    if (timestamp) {
+      resultBox.insertBefore(meta, timestamp);
+    } else {
+      resultBox.appendChild(meta);
+    }
+  }
+
+  meta.textContent = summary;
+}
+
+function refreshSystemStatus() {
+  jsonpRequest(
+    { action: "status" },
+    function(data) {
+      setBackendOnline();
+      if (data && data.active) {
+        activeEventName.textContent = data.name;
+        activeEventInfo.textContent = "+" + data.points + " points • Check-in " + data.opens + " – " + data.closes;
+      } else {
+        activeEventName.textContent = "No Active Event";
+        activeEventInfo.textContent = data && data.message ? data.message : "Attendance is closed";
+      }
+    },
+    function() {
+      setBackendOffline();
+      activeEventName.textContent = "Backend Unavailable";
+      activeEventInfo.textContent = "Could not reach Apps Script";
+    }
+  );
+}
+
+function setBackendOnline() {
+  backendDot.className = "online";
+  backendText.textContent = "Backend ✓";
+}
+
+function setBackendOffline() {
+  backendDot.className = "offline";
+  backendText.textContent = "Backend Offline";
+}
+
+soundButton.addEventListener("click", function() {
+  soundEnabled = !soundEnabled;
+  soundButton.textContent = soundEnabled ? "🔊 Sound On" : "🔇 Sound Off";
+});
+
+retryButton.addEventListener("click", refreshSystemStatus);
+
+function scheduleReset() {
+  setTimeout(resetScanner, RESULT_DISPLAY_MS);
+}
+
+function resetScanner() {
+  const registrationWasOpen = registrationPanel.style.display === "block";
+
+  registrationPanel.style.display = "none";
+  clearRegistration();
+  resultBox.className = "";
+  resultBox.textContent = "Ready for next student.";
+  manualId.value = "";
+  manualButton.disabled = false;
+  scannerLocked = false;
+  showReady();
+
+  if (registrationWasOpen) {
+    setTimeout(scrollToScanner, 60);
+  }
+}
+
+function showReady() {
+  statusBox.className = "ready";
+  statusBox.textContent = "● READY TO SCAN";
+}
+
+function scannerError(message) {
+  statusBox.className = "busy";
+  statusBox.textContent = "Scanner unavailable";
+  resultBox.className = "error";
+  resultBox.innerHTML = "<div class='error-title'>" + escapeHtml(message) + "</div>";
+}
+
+function jsonpRequest(parameters, successHandler, errorHandler) {
+  const callbackName = "mun_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+  const script = document.createElement("script");
+  let completed = false;
+  let timeout = null;
+
+  window[callbackName] = function(data) {
+    if (completed) return;
+    completed = true;
+    clearTimeout(timeout);
+    try { successHandler(data); }
+    finally { cleanup(); }
+  };
+
+  const query = new URLSearchParams();
+  Object.keys(parameters).forEach(function(key) { query.set(key, parameters[key]); });
+  query.set("callback", callbackName);
+  query.set("t", Date.now());
+  script.src = APPS_SCRIPT_URL + "?" + query.toString();
+
+  script.onerror = function() {
+    if (completed) return;
+    completed = true;
+    clearTimeout(timeout);
+    cleanup();
+    errorHandler();
+  };
+
+  timeout = setTimeout(function() {
+    if (completed) return;
+    completed = true;
+    cleanup();
+    errorHandler();
+  }, 8000);
+
+  function cleanup() {
+    try { delete window[callbackName]; }
+    catch (error) { window[callbackName] = undefined; }
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  document.body.appendChild(script);
+}
+
+function successSound() {
+  if (!soundEnabled) return;
+  playTones([{ frequency: 660, duration: 75 }, { frequency: 880, duration: 110 }]);
+}
+
+function errorSound() {
+  if (!soundEnabled) return;
+  playTones([{ frequency: 300, duration: 140 }, { frequency: 220, duration: 150 }]);
+}
+
+function alreadyCheckedSound() {
+  if (!soundEnabled) return;
+  playTones([{ frequency: 420, duration: 90 }, { frequency: 420, duration: 90 }]);
+}
+
+function newMemberSound() {
+  if (!soundEnabled) return;
+  playTones([{ frequency: 500, duration: 90 }, { frequency: 620, duration: 100 }]);
+}
+
+function playTones(tones) {
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    const context = new AudioContextClass();
+    let start = context.currentTime;
+
+    tones.forEach(function(tone) {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.value = tone.frequency;
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      gain.gain.setValueAtTime(.08, start);
+      gain.gain.exponentialRampToValueAtTime(.001, start + tone.duration / 1000);
+      oscillator.start(start);
+      oscillator.stop(start + tone.duration / 1000);
+      start += tone.duration / 1000 + .03;
+    });
+
+    setTimeout(function() { context.close(); }, 1000);
+  } catch (error) {
+    console.log("Audio unavailable.");
+  }
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+initializeScanner();
+</script>
+</body>
+</html>
