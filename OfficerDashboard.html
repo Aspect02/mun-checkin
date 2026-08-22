@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <base target="_top">
+
+  <style>
+
+    body {
+      margin: 0;
+      padding: 30px;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      color: #222;
+    }
+
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+
+    .header {
+      margin-bottom: 30px;
+    }
+
+
+    .header h1 {
+      margin-bottom: 5px;
+    }
+
+
+    .header p {
+      margin-top: 0;
+      color: #666;
+    }
+
+
+    .card {
+      background: white;
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 14px;
+      box-shadow:
+        0 2px 8px
+        rgba(0,0,0,0.08);
+    }
+
+
+    h2 {
+      margin-top: 0;
+    }
+
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+
+    select,
+    input,
+    textarea {
+
+      width: 100%;
+      box-sizing: border-box;
+
+      padding: 11px;
+
+      font-size: 16px;
+
+      border:
+        1px solid #ccc;
+
+      border-radius:
+        8px;
+    }
+
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+
+    button {
+
+      margin-top: 20px;
+
+      padding:
+        12px 18px;
+
+      font-size:
+        16px;
+
+      border:
+        none;
+
+      border-radius:
+        8px;
+
+      background:
+        #315da8;
+
+      color:
+        white;
+
+      cursor:
+        pointer;
+    }
+
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+
+    .result {
+
+      margin-top:
+        18px;
+
+      padding:
+        12px;
+
+      border-radius:
+        8px;
+
+      display:
+        none;
+    }
+
+
+    .success {
+
+      display:
+        block;
+
+      background:
+        #eaf7ee;
+
+      color:
+        #176b34;
+    }
+
+
+    .error {
+
+      display:
+        block;
+
+      background:
+        #fdecec;
+
+      color:
+        #a12222;
+    }
+
+
+    .processing {
+
+      display:
+        block;
+
+      background:
+        #eef2f7;
+
+      color:
+        #444;
+    }
+
+
+    .warning {
+
+      padding:
+        12px;
+
+      border-radius:
+        8px;
+
+      background:
+        #fff7dd;
+
+      margin-bottom:
+        20px;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+  <div class="header">
+
+    <h1>
+      Model UN Officer Dashboard
+    </h1>
+
+    <p>
+      Manual attendance and point adjustments
+    </p>
+
+  </div>
+
+
+  <div class="warning">
+
+    <strong>
+      Officer Use Only
+    </strong>
+
+    <br>
+
+    Manual actions are permanently recorded
+    with the officer name and timestamp.
+
+  </div>
+
+
+
+  <!-- ==========================================
+       MANUAL ATTENDANCE
+       ========================================== -->
+
+
+  <div class="card">
+
+    <h2>
+      Manual Attendance
+    </h2>
+
+
+    <label for="attendanceStudent">
+      Student
+    </label>
+
+    <select id="attendanceStudent">
+
+      <option value="">
+        Select student
+      </option>
+
+    </select>
+
+
+    <label for="attendanceEvent">
+      Event
+    </label>
+
+    <select id="attendanceEvent">
+
+      <option value="">
+        Select event
+      </option>
+
+    </select>
+
+
+    <label for="attendanceReason">
+      Reason
+    </label>
+
+    <textarea
+      id="attendanceReason"
+      placeholder="Example: Forgot ID — attendance verified">
+    </textarea>
+
+
+    <label for="attendanceOfficer">
+      Officer Name
+    </label>
+
+    <input
+      id="attendanceOfficer"
+      type="text"
+      placeholder="Enter your full name">
+
+
+    <button
+      id="attendanceButton"
+      type="button">
+
+      Mark Attended
+
+    </button>
+
+
+    <div
+      id="attendanceResult"
+      class="result">
+    </div>
+
+  </div>
+
+
+
+  <!-- ==========================================
+       MANUAL POINT ADJUSTMENT
+       ========================================== -->
+
+
+  <div class="card">
+
+    <h2>
+      Manual Point Adjustment
+    </h2>
+
+
+    <label for="pointsStudent">
+      Student
+    </label>
+
+    <select id="pointsStudent">
+
+      <option value="">
+        Select student
+      </option>
+
+    </select>
+
+
+    <label for="pointsCategory">
+      Category
+    </label>
+
+    <select id="pointsCategory">
+
+      <option value="">
+        Select category
+      </option>
+
+      <option value="Service">
+        Service
+      </option>
+
+      <option value="Competition">
+        Competition
+      </option>
+
+      <option value="Training">
+        Training
+      </option>
+
+      <option value="Leadership">
+        Leadership
+      </option>
+
+      <option value="Award">
+        Award
+      </option>
+
+      <option value="Fundraising">
+        Fundraising
+      </option>
+
+      <option value="Correction">
+        Correction
+      </option>
+
+      <option value="Manual Adjustment">
+        Manual Adjustment
+      </option>
+
+    </select>
+
+
+    <label for="pointsAmount">
+      Points
+    </label>
+
+    <input
+      id="pointsAmount"
+      type="number"
+      step="1"
+      placeholder="Example: 3 or -2">
+
+
+    <label for="pointsReason">
+      Reason
+    </label>
+
+    <textarea
+      id="pointsReason"
+      placeholder="Explain why points are being added or deducted">
+    </textarea>
+
+
+    <label for="pointsOfficer">
+      Officer Name
+    </label>
+
+    <input
+      id="pointsOfficer"
+      type="text"
+      placeholder="Enter your full name">
+
+
+    <button
+      id="pointsButton"
+      type="button">
+
+      Submit Adjustment
+
+    </button>
+
+
+    <div
+      id="pointsResult"
+      class="result">
+    </div>
+
+  </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/*********************************************************
+ * ELEMENTS
+ *********************************************************/
+
+
+const attendanceStudent =
+  document.getElementById(
+    "attendanceStudent"
+  );
+
+const attendanceEvent =
+  document.getElementById(
+    "attendanceEvent"
+  );
+
+const attendanceReason =
+  document.getElementById(
+    "attendanceReason"
+  );
+
+const attendanceOfficer =
+  document.getElementById(
+    "attendanceOfficer"
+  );
+
+const attendanceButton =
+  document.getElementById(
+    "attendanceButton"
+  );
+
+const attendanceResult =
+  document.getElementById(
+    "attendanceResult"
+  );
+
+
+const pointsStudent =
+  document.getElementById(
+    "pointsStudent"
+  );
+
+const pointsCategory =
+  document.getElementById(
+    "pointsCategory"
+  );
+
+const pointsAmount =
+  document.getElementById(
+    "pointsAmount"
+  );
+
+const pointsReason =
+  document.getElementById(
+    "pointsReason"
+  );
+
+const pointsOfficer =
+  document.getElementById(
+    "pointsOfficer"
+  );
+
+const pointsButton =
+  document.getElementById(
+    "pointsButton"
+  );
+
+const pointsResult =
+  document.getElementById(
+    "pointsResult"
+  );
+
+
+
+/*********************************************************
+ * LOAD DASHBOARD DATA
+ *********************************************************/
+
+
+google.script.run
+
+  .withSuccessHandler(
+    loadDashboardData
+  )
+
+  .withFailureHandler(
+    function(error) {
+
+      alert(
+        "Could not load dashboard: " +
+        error.message
+      );
+
+    }
+  )
+
+  .getOfficerDashboardData();
+
+
+
+/*********************************************************
+ * POPULATE DROPDOWNS
+ *********************************************************/
+
+
+function loadDashboardData(data) {
+
+
+  data.students.forEach(
+    function(student) {
+
+
+      const attendanceOption =
+        document.createElement(
+          "option"
+        );
+
+
+      attendanceOption.value =
+        student.id;
+
+
+      attendanceOption.textContent =
+        student.name +
+        " — Grade " +
+        student.grade;
+
+
+      attendanceStudent
+        .appendChild(
+          attendanceOption
+        );
+
+
+      const pointsOption =
+        attendanceOption
+          .cloneNode(true);
+
+
+      pointsStudent
+        .appendChild(
+          pointsOption
+        );
+
+    }
+  );
+
+
+  data.events.forEach(
+    function(event) {
+
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        event.id;
+
+
+      option.textContent =
+        event.id +
+        " — " +
+        event.name;
+
+
+      attendanceEvent
+        .appendChild(
+          option
+        );
+
+    }
+  );
+
+}
+
+
+
+/*********************************************************
+ * MANUAL ATTENDANCE
+ *********************************************************/
+
+
+attendanceButton.addEventListener(
+  "click",
+  function() {
+
+
+    attendanceButton.disabled =
+      true;
+
+
+    showMessage(
+      attendanceResult,
+      "Processing...",
+      "processing"
+    );
+
+
+    google.script.run
+
+      .withSuccessHandler(
+        function(data) {
+
+
+          showMessage(
+            attendanceResult,
+
+            "✓ " +
+            data.name +
+            "<br>" +
+            data.event +
+            "<br>+" +
+            data.points +
+            " points" +
+            "<br>" +
+            data.timestamp,
+
+            "success"
+          );
+
+
+          attendanceReason.value =
+            "";
+
+
+          attendanceButton.disabled =
+            false;
+
+        }
+      )
+
+      .withFailureHandler(
+        function(error) {
+
+
+          showMessage(
+            attendanceResult,
+            error.message,
+            "error"
+          );
+
+
+          attendanceButton.disabled =
+            false;
+
+        }
+      )
+
+      .addManualAttendance(
+
+        attendanceStudent.value,
+
+        attendanceEvent.value,
+
+        attendanceOfficer.value,
+
+        attendanceReason.value
+
+      );
+
+  }
+);
+
+
+
+/*********************************************************
+ * MANUAL POINT ADJUSTMENT
+ *********************************************************/
+
+
+pointsButton.addEventListener(
+  "click",
+  function() {
+
+
+    pointsButton.disabled =
+      true;
+
+
+    showMessage(
+      pointsResult,
+      "Processing...",
+      "processing"
+    );
+
+
+    google.script.run
+
+      .withSuccessHandler(
+        function(data) {
+
+
+          const sign =
+            data.points > 0
+              ? "+"
+              : "";
+
+
+          showMessage(
+            pointsResult,
+
+            "✓ " +
+            data.name +
+            "<br>" +
+            data.category +
+            "<br>" +
+            sign +
+            data.points +
+            " points" +
+            "<br>" +
+            data.timestamp,
+
+            "success"
+          );
+
+
+          pointsAmount.value =
+            "";
+
+          pointsReason.value =
+            "";
+
+
+          pointsButton.disabled =
+            false;
+
+        }
+      )
+
+      .withFailureHandler(
+        function(error) {
+
+
+          showMessage(
+            pointsResult,
+            error.message,
+            "error"
+          );
+
+
+          pointsButton.disabled =
+            false;
+
+        }
+      )
+
+      .addManualPoints(
+
+        pointsStudent.value,
+
+        pointsCategory.value,
+
+        pointsReason.value,
+
+        pointsAmount.value,
+
+        pointsOfficer.value
+
+      );
+
+  }
+);
+
+
+
+/*********************************************************
+ * MESSAGE HELPER
+ *********************************************************/
+
+
+function showMessage(
+  element,
+  message,
+  type
+) {
+
+  element.className =
+    "result " + type;
+
+  element.innerHTML =
+    message;
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
+
