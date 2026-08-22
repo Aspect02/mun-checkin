@@ -195,6 +195,33 @@
         20px;
     }
 
+
+    .student-picker {
+      position: relative;
+    }
+
+    .student-search {
+      margin-bottom: 8px;
+    }
+
+    .student-search::placeholder {
+      color: #8a8f98;
+    }
+
+    .student-count {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #777;
+    }
+
+    .student-picker select {
+      max-height: 260px;
+    }
+
+    .no-results {
+      color: #a12222;
+    }
+
   </style>
 
 </head>
@@ -246,17 +273,34 @@
     </h2>
 
 
-    <label for="attendanceStudent">
+    <label for="attendanceStudentSearch">
       Student
     </label>
 
-    <select id="attendanceStudent">
+    <div class="student-picker">
 
-      <option value="">
-        Select student
-      </option>
+      <input
+        id="attendanceStudentSearch"
+        class="student-search"
+        type="search"
+        placeholder="Search by name, Student ID, or grade"
+        autocomplete="off"
+        spellcheck="false">
 
-    </select>
+      <select id="attendanceStudent">
+
+        <option value="">
+          Select student
+        </option>
+
+      </select>
+
+      <div
+        id="attendanceStudentCount"
+        class="student-count">
+      </div>
+
+    </div>
 
 
     <label for="attendanceEvent">
@@ -322,17 +366,34 @@
     </h2>
 
 
-    <label for="pointsStudent">
+    <label for="pointsStudentSearch">
       Student
     </label>
 
-    <select id="pointsStudent">
+    <div class="student-picker">
 
-      <option value="">
-        Select student
-      </option>
+      <input
+        id="pointsStudentSearch"
+        class="student-search"
+        type="search"
+        placeholder="Search by name, Student ID, or grade"
+        autocomplete="off"
+        spellcheck="false">
 
-    </select>
+      <select id="pointsStudent">
+
+        <option value="">
+          Select student
+        </option>
+
+      </select>
+
+      <div
+        id="pointsStudentCount"
+        class="student-count">
+      </div>
+
+    </div>
 
 
     <label for="pointsCategory">
@@ -445,6 +506,16 @@ const attendanceStudent =
     "attendanceStudent"
   );
 
+const attendanceStudentSearch =
+  document.getElementById(
+    "attendanceStudentSearch"
+  );
+
+const attendanceStudentCount =
+  document.getElementById(
+    "attendanceStudentCount"
+  );
+
 const attendanceEvent =
   document.getElementById(
     "attendanceEvent"
@@ -474,6 +545,16 @@ const attendanceResult =
 const pointsStudent =
   document.getElementById(
     "pointsStudent"
+  );
+
+const pointsStudentSearch =
+  document.getElementById(
+    "pointsStudentSearch"
+  );
+
+const pointsStudentCount =
+  document.getElementById(
+    "pointsStudentCount"
   );
 
 const pointsCategory =
@@ -539,78 +620,243 @@ google.script.run
  *********************************************************/
 
 
+let dashboardStudents = [];
+let dashboardEvents = [];
+
+
 function loadDashboardData(data) {
 
+  dashboardStudents =
+    Array.isArray(data.students)
+      ? data.students.slice()
+      : [];
 
-  data.students.forEach(
-    function(student) {
+  dashboardEvents =
+    Array.isArray(data.events)
+      ? data.events.slice()
+      : [];
 
+  renderStudentOptions(
+    attendanceStudent,
+    attendanceStudentCount,
+    dashboardStudents,
+    ""
+  );
 
-      const attendanceOption =
-        document.createElement(
-          "option"
-        );
-
-
-      attendanceOption.value =
-        student.id;
-
-
-      attendanceOption.textContent =
-        student.name +
-        " — Grade " +
-        student.grade;
-
-
-      attendanceStudent
-        .appendChild(
-          attendanceOption
-        );
-
-
-      const pointsOption =
-        attendanceOption
-          .cloneNode(true);
-
-
-      pointsStudent
-        .appendChild(
-          pointsOption
-        );
-
-    }
+  renderStudentOptions(
+    pointsStudent,
+    pointsStudentCount,
+    dashboardStudents,
+    ""
   );
 
 
-  data.events.forEach(
+  dashboardEvents.forEach(
     function(event) {
-
 
       const option =
         document.createElement(
           "option"
         );
 
-
       option.value =
         event.id;
-
 
       option.textContent =
         event.id +
         " — " +
         event.name;
 
-
       attendanceEvent
         .appendChild(
           option
         );
-
     }
   );
 
 }
+
+
+function renderStudentOptions(
+  selectElement,
+  countElement,
+  students,
+  searchTerm
+) {
+
+  const previousValue =
+    selectElement.value;
+
+  const query =
+    String(searchTerm || "")
+      .trim()
+      .toLowerCase();
+
+  const filtered =
+    students.filter(
+      function(student) {
+
+        if (!query) {
+          return true;
+        }
+
+        const searchable =
+          [
+            student.name,
+            student.id,
+            student.grade,
+            "grade " + student.grade
+          ]
+          .join(" ")
+          .toLowerCase();
+
+        return searchable.includes(query);
+      }
+    );
+
+
+  selectElement.innerHTML =
+    '<option value="">Select student</option>';
+
+
+  filtered.forEach(
+    function(student) {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        student.id;
+
+      option.textContent =
+        student.name +
+        " — " +
+        student.id +
+        " — Grade " +
+        student.grade;
+
+      selectElement.appendChild(
+        option
+      );
+    }
+  );
+
+
+  if (
+    previousValue &&
+    filtered.some(
+      function(student) {
+        return student.id === previousValue;
+      }
+    )
+  ) {
+    selectElement.value =
+      previousValue;
+  }
+
+
+  if (filtered.length === 0) {
+
+    countElement.textContent =
+      "No matching members";
+
+    countElement.className =
+      "student-count no-results";
+
+  } else {
+
+    countElement.textContent =
+      filtered.length +
+      (
+        filtered.length === 1
+          ? " member shown"
+          : " members shown"
+      );
+
+    countElement.className =
+      "student-count";
+  }
+}
+
+
+attendanceStudentSearch
+  .addEventListener(
+    "input",
+    function() {
+
+      renderStudentOptions(
+        attendanceStudent,
+        attendanceStudentCount,
+        dashboardStudents,
+        attendanceStudentSearch.value
+      );
+    }
+  );
+
+
+pointsStudentSearch
+  .addEventListener(
+    "input",
+    function() {
+
+      renderStudentOptions(
+        pointsStudent,
+        pointsStudentCount,
+        dashboardStudents,
+        pointsStudentSearch.value
+      );
+    }
+  );
+
+
+attendanceStudent
+  .addEventListener(
+    "change",
+    function() {
+
+      if (!attendanceStudent.value) {
+        return;
+      }
+
+      const selected =
+        dashboardStudents.find(
+          function(student) {
+            return student.id === attendanceStudent.value;
+          }
+        );
+
+      if (selected) {
+        attendanceStudentSearch.value =
+          selected.name;
+      }
+    }
+  );
+
+
+pointsStudent
+  .addEventListener(
+    "change",
+    function() {
+
+      if (!pointsStudent.value) {
+        return;
+      }
+
+      const selected =
+        dashboardStudents.find(
+          function(student) {
+            return student.id === pointsStudent.value;
+          }
+        );
+
+      if (selected) {
+        pointsStudentSearch.value =
+          selected.name;
+      }
+    }
+  );
 
 
 
